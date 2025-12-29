@@ -5,7 +5,6 @@
 
 import CryptoKit
 import Foundation
-import LocalAuthentication
 
 /// P-256 identity stored in the iOS Secure Enclave, exportable as age1tag recipient
 public class SecureEnclaveIdentity {
@@ -32,19 +31,22 @@ public class SecureEnclaveIdentity {
     /// Generate a new Secure Enclave identity
     public static func generate(tag: String, requireBiometric: Bool = false) throws -> SecureEnclaveIdentity {
         // Delete existing key with same tag
-        try? delete(tag: tag)
+        delete(tag: tag)
 
         var accessFlags: SecAccessControlCreateFlags = [.privateKeyUsage]
         if requireBiometric {
             accessFlags.insert(.biometryCurrentSet)
         }
 
-        let accessControl = SecAccessControlCreateWithFlags(
+        var cfError: Unmanaged<CFError>?
+        guard let accessControl = SecAccessControlCreateWithFlags(
             nil,
             kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
             accessFlags,
-            nil
-        )!
+            &cfError
+        ) else {
+            throw CryptoError.encryptionFailed("Failed to create access control: \(cfError?.takeRetainedValue().localizedDescription ?? "unknown")")
+        }
 
         let privateKey = try SecureEnclave.P256.KeyAgreement.PrivateKey(
             compactRepresentable: true,
@@ -71,7 +73,7 @@ public class SecureEnclaveIdentity {
     }
 
     /// Delete a Secure Enclave identity
-    public static func delete(tag: String) throws {
+    public static func delete(tag: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: tag,
