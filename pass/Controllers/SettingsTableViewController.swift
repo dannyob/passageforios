@@ -177,8 +177,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         } else if cell == secureEnclaveTableViewCell {
             showSecureEnclaveSetup()
         } else if cell == ageIdentityTableViewCell {
-            let vc = AgeIdentityImportTableViewController(style: .insetGrouped)
-            navigationController?.pushViewController(vc, animated: true)
+            showAgeIdentityActionSheet()
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -186,6 +185,46 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     private func showSecureEnclaveSetup() {
         let secureEnclaveVC = SecureEnclaveSetupViewController(style: .insetGrouped)
         navigationController?.pushViewController(secureEnclaveVC, animated: true)
+    }
+
+    private func showAgeIdentityActionSheet() {
+        let hasIdentity: Bool = AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) != nil
+
+        let alert = UIAlertController(title: "AgeIdentity".localize(), message: nil, preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "ImportAgeIdentity".localize(), style: .default) { [weak self] _ in
+            let vc = AgeIdentityImportTableViewController(style: .insetGrouped)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        })
+
+        if hasIdentity {
+            alert.addAction(UIAlertAction(title: "DeleteAgeIdentity".localize(), style: .destructive) { [weak self] _ in
+                self?.deleteAgeIdentity()
+            })
+        }
+
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = ageIdentityTableViewCell
+            popover.sourceRect = ageIdentityTableViewCell.bounds
+        }
+
+        present(alert, animated: true)
+    }
+
+    private func deleteAgeIdentity() {
+        let alert = UIAlertController(
+            title: "DeleteAgeIdentity".localize(),
+            message: "DeleteAgeIdentityWarning".localize(),
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete".localize(), style: .destructive) { [weak self] _ in
+            AppKeychain.shared.removeContent(for: CryptoAgent.ageIdentityKeychainKey)
+            self?.setAgeIdentityCellDetailText()
+        })
+        present(alert, animated: true)
     }
 
     override func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {

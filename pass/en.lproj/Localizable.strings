@@ -380,3 +380,5 @@ Finally, copy them to a location accessible by the Files app.";
 "AgeIdentityImportedMessage"        = "Your age identity has been saved. You can now decrypt passwords encrypted to this identity.";
 "Paste"                             = "Paste";
 "Configured"                        = "Configured";
+"DeleteAgeIdentity"                 = "Delete Age Identity";
+"DeleteAgeIdentityWarning"          = "You will no longer be able to decrypt passwords encrypted to this identity.";
