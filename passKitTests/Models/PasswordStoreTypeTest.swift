@@ -51,7 +51,30 @@ final class PasswordStoreTypeTest: XCTestCase {
         XCTAssertEqual(storeType, .passage)
     }
 
-    func testUnknownWhenNoMarkerFiles() {
+    func testDetectsPassageStoreByAgeFiles() throws {
+        // passage stores without .age-recipients (encrypting to own identity only)
+        let passwordDir = tempDir.appendingPathComponent("passwords")
+        try FileManager.default.createDirectory(at: passwordDir, withIntermediateDirectories: true)
+        let ageFile = passwordDir.appendingPathComponent("test.age")
+        try "encrypted data".write(to: ageFile, atomically: true, encoding: .utf8)
+
+        let storeType = PasswordStoreType.detect(at: tempDir)
+        XCTAssertEqual(storeType, .passage)
+    }
+
+    func testDetectsPassStoreByGpgFiles() throws {
+        // pass stores without .gpg-id marker
+        let passwordDir = tempDir.appendingPathComponent("passwords")
+        try FileManager.default.createDirectory(at: passwordDir, withIntermediateDirectories: true)
+        let gpgFile = passwordDir.appendingPathComponent("test.gpg")
+        try "encrypted data".write(to: gpgFile, atomically: true, encoding: .utf8)
+
+        let storeType = PasswordStoreType.detect(at: tempDir)
+        XCTAssertEqual(storeType, .pass)
+    }
+
+    func testUnknownWhenNoMarkerFilesOrEncryptedFiles() {
+        // Empty directory with no markers and no encrypted files
         let storeType = PasswordStoreType.detect(at: tempDir)
         XCTAssertEqual(storeType, .unknown)
     }

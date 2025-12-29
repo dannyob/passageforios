@@ -59,6 +59,65 @@ public enum PasswordStoreType: Equatable {
             return .passage
         }
 
+        // Fallback: check for .age files (passage without .age-recipients)
+        // This handles passage stores where user encrypts only to their own identity
+        if hasAgeFiles(at: url) {
+            return .passage
+        }
+
+        // Fallback: check for .gpg files (pass without .gpg-id)
+        if hasGpgFiles(at: url) {
+            return .pass
+        }
+
         return .unknown
+    }
+
+    /// Check if directory contains any .age files (recursively, limited depth)
+    private static func hasAgeFiles(at url: URL) -> Bool {
+        hasFiles(withExtension: "age", at: url)
+    }
+
+    /// Check if directory contains any .gpg files (recursively, limited depth)
+    private static func hasGpgFiles(at url: URL) -> Bool {
+        hasFiles(withExtension: "gpg", at: url)
+    }
+
+    /// Check if directory contains files with given extension (shallow check for performance)
+    private static func hasFiles(withExtension ext: String, at url: URL) -> Bool {
+        let fileManager = FileManager.default
+        guard let enumerator = fileManager.enumerator(
+            at: url,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+        ) else {
+            return false
+        }
+
+        // Check first few levels only for performance
+        var depth = 0
+        let maxDepth = 3
+        var checkedFiles = 0
+        let maxFiles = 100
+
+        while let fileURL = enumerator.nextObject() as? URL {
+            // Limit search depth and file count for performance
+            depth = enumerator.level
+            if depth > maxDepth {
+                enumerator.skipDescendants()
+                continue
+            }
+
+            checkedFiles += 1
+            if checkedFiles > maxFiles {
+                break
+            }
+
+            if fileURL.pathExtension.lowercased() == ext {
+                return true
+            }
+        }
+
+        return false
     }
 }
