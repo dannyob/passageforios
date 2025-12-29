@@ -176,6 +176,30 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="secureEnclaveTableViewCell" textLabel="SE-lbl-001" detailTextLabel="SE-lbl-002" style="IBUITableViewCellStyleValue1" id="SE-cell-001">
+                                        <rect key="frame" x="0.0" y="248.66667175292969" width="390" height="43.666667938232422"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SE-cell-001" id="SE-cnt-001">
+                                            <rect key="frame" x="0.0" y="0.0" width="359.66666666666669" height="43.666667938232422"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Secure Enclave" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="SE-lbl-001">
+                                                    <rect key="frame" x="20.000000000000007" y="11.999999999999998" width="114.66666666666667" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Not Set" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="SE-lbl-002">
+                                                    <rect key="frame" x="306.33333333333337" y="11.999999999999998" width="57.333333333333336" height="20.333333333333332"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="6U8-ue-MhL">
@@ -237,6 +261,7 @@
                         <outlet property="passcodeTableViewCell" destination="6Y0-mj-qhA" id="vkI-h5-GRo"/>
                         <outlet property="passwordRepositoryTableViewCell" destination="2rc-ZW-XKd" id="aFq-K7-eIj"/>
                         <outlet property="pgpKeyTableViewCell" destination="1ze-MS-Xbj" id="hXe-eD-0R4"/>
+                        <outlet property="secureEnclaveTableViewCell" destination="SE-cell-001" id="SE-out-001"/>
                         <segue destination="ZUt-x1-TJu" kind="showDetail" identifier="setPGPKeyByURLSegue" id="qRF-S1-bqF"/>
                         <segue destination="ffY-rC-jhq" kind="showDetail" identifier="setPGPKeyByASCIISegue" id="mgi-Oe-i2X"/>
                         <segue destination="Ap7-WQ-eEv" kind="showDetail" identifier="setPGPKeyByFileSegue" id="mnn-a5-KNj"/>

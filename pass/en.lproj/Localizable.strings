@@ -350,3 +350,23 @@ to get the public and the encryption private subkeys in this specific format. Ch
   $ gpg --show-key subkey
 
 Finally, copy them to a location accessible by the Files app.";
+
+// Secure Enclave
+"SecureEnclave"                     = "Secure Enclave";
+"Status"                            = "Status";
+"RecipientForAgeRecipients"         = "Your Recipient (for .age-recipients)";
+"IdentityConfigured"                = "Identity configured";
+"NoIdentity"                        = "No identity";
+"SecureEnclaveNotAvailable"         = "Secure Enclave not available";
+"GenerateIdentity"                  = "Generate Identity";
+"RegenerateIdentity"                = "Regenerate Identity";
+"DeleteIdentity"                    = "Delete Identity";
+"GenerateIdentityMessage"           = "This will create a new Secure Enclave key. Add the recipient to your .age-recipients file to encrypt passwords to this device.";
+"RegenerateIdentityMessage"         = "This will replace your existing identity with a new one. You will no longer be able to decrypt passwords encrypted to the old identity. Add the new recipient to your .age-recipients file.";
+"IdentityGenerated"                 = "Identity Generated";
+"CopyRecipientPrompt"               = "Copy the recipient string to add to your .age-recipients file?";
+"Copy"                              = "Copy";
+"Copied"                            = "Copied";
+"Later"                             = "Later";
+"DeleteIdentityMessage"             = "You will no longer be able to decrypt passwords encrypted to this device.";
+"Generate"                          = "Generate";

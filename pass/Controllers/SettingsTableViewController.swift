@@ -7,6 +7,7 @@
 //
 
 import CoreData
+import CryptoKit
 import passKit
 import SVProgressHUD
 import UIKit
@@ -16,6 +17,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     @IBOutlet var pgpKeyTableViewCell: UITableViewCell!
     @IBOutlet var passcodeTableViewCell: UITableViewCell!
     @IBOutlet var passwordRepositoryTableViewCell: UITableViewCell!
+    @IBOutlet var secureEnclaveTableViewCell: UITableViewCell!
     var setPasscodeLockAlert: UIAlertController?
 
     let keychain = AppKeychain.shared
@@ -70,12 +72,14 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         passwordRepositoryTableViewCell.detailTextLabel?.text = Defaults.gitURL.host
         setPGPKeyTableViewCellDetailText()
         setPasscodeLockCell()
+        setSecureEnclaveCellDetailText()
     }
 
     override func viewWillAppear(_: Bool) {
         super.viewWillAppear(true)
         tabBarController!.delegate = self
         setPasswordRepositoryTableViewCellDetailText()
+        setSecureEnclaveCellDetailText()
     }
 
     private func setPasscodeLockCell() {
@@ -83,6 +87,22 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             passcodeTableViewCell.detailTextLabel?.text = "On".localize()
         } else {
             passcodeTableViewCell.detailTextLabel?.text = "Off".localize()
+        }
+    }
+
+    private func setSecureEnclaveCellDetailText() {
+        if !SecureEnclave.isAvailable {
+            secureEnclaveTableViewCell.detailTextLabel?.text = "N/A"
+            secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+            return
+        }
+
+        if let _ = try? SecureEnclaveIdentity.load(tag: "passforios.age.identity") {
+            secureEnclaveTableViewCell.detailTextLabel?.text = "On".localize()
+            secureEnclaveTableViewCell.detailTextLabel?.textColor = .systemGreen
+        } else {
+            secureEnclaveTableViewCell.detailTextLabel?.text = "NotSet".localize()
+            secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
         }
     }
 
@@ -117,6 +137,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         setPGPKeyTableViewCellDetailText()
         setPasswordRepositoryTableViewCellDetailText()
         setPasscodeLockCell()
+        setSecureEnclaveCellDetailText()
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -139,8 +160,15 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             }
         } else if cell == pgpKeyTableViewCell {
             showPGPKeyActionSheet()
+        } else if cell == secureEnclaveTableViewCell {
+            showSecureEnclaveSetup()
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    private func showSecureEnclaveSetup() {
+        let secureEnclaveVC = SecureEnclaveSetupViewController(style: .insetGrouped)
+        navigationController?.pushViewController(secureEnclaveVC, animated: true)
     }
 
     override func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
