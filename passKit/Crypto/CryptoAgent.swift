@@ -109,15 +109,17 @@ public class CryptoAgent {
     /// Decrypt data using the appropriate crypto backend
     /// - Parameters:
     ///   - encryptedData: The encrypted data to decrypt
+    ///   - keyID: Optional key ID for PGP multi-key support
     ///   - requestPassphrase: Callback to request passphrase if needed
     /// - Returns: Decrypted data
     public func decrypt(
         encryptedData: Data,
+        keyID: String? = nil,
         requestPassphrase: @escaping (String) -> String
     ) throws -> Data {
         switch storeType {
         case .pass:
-            return try decryptWithPGP(encryptedData: encryptedData, requestPassphrase: requestPassphrase)
+            return try decryptWithPGP(encryptedData: encryptedData, keyID: keyID, requestPassphrase: requestPassphrase)
 
         case .passage:
             return try decryptWithAge(encryptedData: encryptedData, requestPassphrase: requestPassphrase)
@@ -130,6 +132,7 @@ public class CryptoAgent {
     /// Decrypt with PGP (delegates to PGPAgent)
     private func decryptWithPGP(
         encryptedData: Data,
+        keyID: String? = nil,
         requestPassphrase: @escaping (String) -> String
     ) throws -> Data {
         if pgpAgent == nil {
@@ -137,6 +140,7 @@ public class CryptoAgent {
         }
         guard let result = try pgpAgent?.decrypt(
             encryptedData: encryptedData,
+            keyID: keyID,
             requestPGPKeyPassphrase: requestPassphrase
         ) else {
             throw CryptoError.decryptionFailed("PGP decryption returned nil")
@@ -199,12 +203,14 @@ public class CryptoAgent {
     // MARK: - Encryption
 
     /// Encrypt data using the appropriate crypto backend
-    /// - Parameter plainData: Data to encrypt
+    /// - Parameters:
+    ///   - plainData: Data to encrypt
+    ///   - keyID: Optional key ID for PGP multi-key support
     /// - Returns: Encrypted data
-    public func encrypt(plainData: Data) throws -> Data {
+    public func encrypt(plainData: Data, keyID: String? = nil) throws -> Data {
         switch storeType {
         case .pass:
-            return try encryptWithPGP(plainData: plainData)
+            return try encryptWithPGP(plainData: plainData, keyID: keyID)
 
         case .passage:
             return try encryptWithAge(plainData: plainData)
@@ -215,12 +221,15 @@ public class CryptoAgent {
     }
 
     /// Encrypt with PGP (delegates to PGPAgent)
-    private func encryptWithPGP(plainData: Data) throws -> Data {
+    private func encryptWithPGP(plainData: Data, keyID: String? = nil) throws -> Data {
         if pgpAgent == nil {
             pgpAgent = PGPAgent(keyStore: keyStore)
         }
         guard let pgp = pgpAgent else {
             throw CryptoError.encryptionFailed("PGP not initialized")
+        }
+        if let keyID {
+            return try pgp.encrypt(plainData: plainData, keyID: keyID)
         }
         return try pgp.encrypt(plainData: plainData)
     }

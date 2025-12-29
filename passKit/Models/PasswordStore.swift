@@ -384,17 +384,24 @@ public class PasswordStore {
     public func decrypt(passwordEntity: PasswordEntity, keyID: String? = nil, requestPGPKeyPassphrase: @escaping (String) -> String) throws -> Password {
         let url = passwordEntity.fileURL(in: storeURL)
         let encryptedData = try Data(contentsOf: url)
-        let data: Data? = try {
-            if Defaults.isEnableGPGIDOn {
-                let keyID = keyID ?? findGPGID(from: url)
-                return try PGPAgent.shared.decrypt(encryptedData: encryptedData, keyID: keyID, requestPGPKeyPassphrase: requestPGPKeyPassphrase)
+
+        let cryptoAgent = CryptoAgent(storeURL: storeURL)
+        let data: Data = try {
+            switch cryptoAgent.storeType {
+            case .pass:
+                // Use keyID logic for PGP stores
+                if Defaults.isEnableGPGIDOn {
+                    let resolvedKeyID = keyID ?? findGPGID(from: url)
+                    return try cryptoAgent.decrypt(encryptedData: encryptedData, keyID: resolvedKeyID, requestPassphrase: requestPGPKeyPassphrase)
+                }
+                return try cryptoAgent.decrypt(encryptedData: encryptedData, requestPassphrase: requestPGPKeyPassphrase)
+
+            case .passage, .unknown:
+                // Age stores don't use keyID for decryption
+                return try cryptoAgent.decrypt(encryptedData: encryptedData, requestPassphrase: requestPGPKeyPassphrase)
             }
-            return try PGPAgent.shared.decrypt(encryptedData: encryptedData, requestPGPKeyPassphrase: requestPGPKeyPassphrase)
         }()
-        guard let decryptedData = data else {
-            throw AppError.decryption
-        }
-        let plainText = String(data: decryptedData, encoding: .utf8) ?? ""
+        let plainText = String(data: data, encoding: .utf8) ?? ""
         return Password(name: passwordEntity.name, path: passwordEntity.path, plainText: plainText)
     }
 
@@ -410,11 +417,21 @@ public class PasswordStore {
 
     public func encrypt(password: Password, keyID: String? = nil) throws -> Data {
         let encryptedDataPath = password.fileURL(in: storeURL)
-        let keyID = keyID ?? findGPGID(from: encryptedDataPath)
-        if Defaults.isEnableGPGIDOn {
-            return try PGPAgent.shared.encrypt(plainData: password.plainData, keyID: keyID)
+
+        let cryptoAgent = CryptoAgent(storeURL: storeURL)
+        switch cryptoAgent.storeType {
+        case .pass:
+            // Use keyID logic for PGP stores
+            let resolvedKeyID = keyID ?? findGPGID(from: encryptedDataPath)
+            if Defaults.isEnableGPGIDOn {
+                return try cryptoAgent.encrypt(plainData: password.plainData, keyID: resolvedKeyID)
+            }
+            return try cryptoAgent.encrypt(plainData: password.plainData)
+
+        case .passage, .unknown:
+            // Age stores use recipients from .age-recipients file
+            return try cryptoAgent.encrypt(plainData: password.plainData)
         }
-        return try PGPAgent.shared.encrypt(plainData: password.plainData)
     }
 
     public func removeGitSSHKeys() {
@@ -465,6 +482,17 @@ func findGPGID(from url: URL) -> String {
         path = path.deletingLastPathComponent()
     }
     path = path.appendingPathComponent(".gpg-id")
+
+    return (try? String(contentsOf: path))?.trimmed ?? ""
+}
+
+func findAgeRecipients(from url: URL) -> String {
+    var path = url
+    while !FileManager.default.fileExists(atPath: path.appendingPathComponent(".age-recipients").path),
+          path.path != "file:///" {
+        path = path.deletingLastPathComponent()
+    }
+    path = path.appendingPathComponent(".age-recipients")
 
     return (try? String(contentsOf: path))?.trimmed ?? ""
 }
