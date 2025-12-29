@@ -18,6 +18,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     @IBOutlet var passcodeTableViewCell: UITableViewCell!
     @IBOutlet var passwordRepositoryTableViewCell: UITableViewCell!
     @IBOutlet var secureEnclaveTableViewCell: UITableViewCell!
+    @IBOutlet var ageIdentityTableViewCell: UITableViewCell!
     var setPasscodeLockAlert: UIAlertController?
 
     let keychain = AppKeychain.shared
@@ -73,6 +74,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         setPGPKeyTableViewCellDetailText()
         setPasscodeLockCell()
         setSecureEnclaveCellDetailText()
+        setAgeIdentityCellDetailText()
     }
 
     override func viewWillAppear(_: Bool) {
@@ -80,6 +82,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         tabBarController!.delegate = self
         setPasswordRepositoryTableViewCellDetailText()
         setSecureEnclaveCellDetailText()
+        setAgeIdentityCellDetailText()
     }
 
     private func setPasscodeLockCell() {
@@ -103,6 +106,16 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         } else {
             secureEnclaveTableViewCell.detailTextLabel?.text = "NotSet".localize()
             secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+        }
+    }
+
+    private func setAgeIdentityCellDetailText() {
+        if let _: String = AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) {
+            ageIdentityTableViewCell.detailTextLabel?.text = "Configured".localize()
+            ageIdentityTableViewCell.detailTextLabel?.textColor = .systemGreen
+        } else {
+            ageIdentityTableViewCell.detailTextLabel?.text = "NotSet".localize()
+            ageIdentityTableViewCell.detailTextLabel?.textColor = .secondaryLabel
         }
     }
 
@@ -138,6 +151,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         setPasswordRepositoryTableViewCellDetailText()
         setPasscodeLockCell()
         setSecureEnclaveCellDetailText()
+        setAgeIdentityCellDetailText()
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -162,6 +176,9 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             showPGPKeyActionSheet()
         } else if cell == secureEnclaveTableViewCell {
             showSecureEnclaveSetup()
+        } else if cell == ageIdentityTableViewCell {
+            let vc = AgeIdentityImportTableViewController(style: .insetGrouped)
+            navigationController?.pushViewController(vc, animated: true)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }

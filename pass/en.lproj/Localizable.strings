@@ -379,3 +379,4 @@ Finally, copy them to a location accessible by the Files app.";
 "AgeIdentityImported"               = "Identity Imported";
 "AgeIdentityImportedMessage"        = "Your age identity has been saved. You can now decrypt passwords encrypted to this identity.";
 "Paste"                             = "Paste";
+"Configured"                        = "Configured";
