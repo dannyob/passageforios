@@ -185,7 +185,8 @@ public final class PasswordEntity: NSManagedObject, Identifiable {
                     passwordEntity.name = name
                     queue.append(passwordEntity)
                 } else {
-                    if (name as NSString).pathExtension == "gpg" {
+                    let ext = (name as NSString).pathExtension
+                    if ext == "gpg" || ext == "age" {
                         passwordEntity.name = (name as NSString).deletingPathExtension
                     } else {
                         passwordEntity.name = name
