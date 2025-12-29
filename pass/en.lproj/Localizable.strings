@@ -370,3 +370,12 @@ Finally, copy them to a location accessible by the Files app.";
 "Later"                             = "Later";
 "DeleteIdentityMessage"             = "You will no longer be able to decrypt passwords encrypted to this device.";
 "Generate"                          = "Generate";
+
+// Age identity import
+"ImportAgeIdentity"                 = "Import Age Identity";
+"AgeIdentity"                       = "Age Identity";
+"AgeIdentityImportExplanation."     = "Paste your age identity string starting with AGE-SECRET-KEY-. This is your private key - it will be stored securely in the device keychain.";
+"InvalidAgeIdentity"                = "Invalid age identity format";
+"AgeIdentityImported"               = "Identity Imported";
+"AgeIdentityImportedMessage"        = "Your age identity has been saved. You can now decrypt passwords encrypted to this identity.";
+"Paste"                             = "Paste";
