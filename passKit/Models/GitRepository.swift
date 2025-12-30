@@ -39,7 +39,10 @@ public class GitRepository {
         guard !repository.isHEADUnborn else {
             return
         }
-        if (try repository.currentBranch().name) != branchName {
+        // currentBranch() can fail with nilError in some repository states
+        // Use try? to handle gracefully and proceed with checkout if needed
+        let currentBranchName = try? repository.currentBranch().name
+        if currentBranchName != branchName {
             try checkoutAndChangeBranch(branchName: branchName, progressBlock: checkoutProgressBlock)
         }
     }
