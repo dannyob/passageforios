@@ -36,13 +36,18 @@ public class GitRepository {
             transferProgressBlock: transferProgressBlock
         )
         self.branchName = branchName
+
         guard !repository.isHEADUnborn else {
             return
         }
+
         // currentBranch() can fail with nilError in some repository states
-        // Use try? to handle gracefully and proceed with checkout if needed
+        // Use try? to handle gracefully
         let currentBranchName = try? repository.currentBranch().name
-        if currentBranchName != branchName {
+
+        // Only switch branches if we successfully detected the current branch
+        // and it differs from the requested branch
+        if let currentBranchName, currentBranchName != branchName {
             try checkoutAndChangeBranch(branchName: branchName, progressBlock: checkoutProgressBlock)
         }
     }
@@ -55,7 +60,9 @@ public class GitRepository {
             try repository.moveHEAD(to: localBranch.reference)
         } else {
             let remoteBranchName = "origin/\(branchName)"
-            let remoteBranch = try repository.lookUpBranch(withName: remoteBranchName, type: .remote, success: nil)
+            guard let remoteBranch = try? repository.lookUpBranch(withName: remoteBranchName, type: .remote, success: nil) else {
+                throw AppError.repositoryRemoteBranchNotFound(branchName: remoteBranchName)
+            }
             guard let remoteBranchOid = remoteBranch.oid else {
                 throw AppError.repositoryRemoteBranchNotFound(branchName: remoteBranchName)
             }
