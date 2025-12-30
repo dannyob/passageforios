@@ -138,3 +138,5 @@ public enum Bech32 {
         polymod(hrpExpand(hrp) + values) == 1
     }
 }
+
+// swiftlint:enable identifier_name

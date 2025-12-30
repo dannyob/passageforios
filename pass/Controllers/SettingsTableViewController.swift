@@ -147,11 +147,13 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
 
     @objc
     func actOnPasswordStoreErasedNotification() {
-        setPGPKeyTableViewCellDetailText()
-        setPasswordRepositoryTableViewCellDetailText()
-        setPasscodeLockCell()
-        setSecureEnclaveCellDetailText()
-        setAgeIdentityCellDetailText()
+        DispatchQueue.main.async {
+            self.setPGPKeyTableViewCellDetailText()
+            self.setPasswordRepositoryTableViewCellDetailText()
+            self.setPasscodeLockCell()
+            self.setSecureEnclaveCellDetailText()
+            self.setAgeIdentityCellDetailText()
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -183,7 +185,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     }
 
     private func showSecureEnclaveSetup() {
-        // TODO: Phase 3 - Secure Enclave age identity setup
+        // Secure Enclave age identity setup planned for Phase 3
         let alert = UIAlertController(
             title: "Secure Enclave",
             message: "Secure Enclave identity support coming in a future update.",
