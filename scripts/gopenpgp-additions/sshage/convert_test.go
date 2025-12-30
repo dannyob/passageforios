@@ -49,3 +49,53 @@ func TestSSHPublicKeyToAgeRecipient_EmptyInput(t *testing.T) {
 		t.Error("expected error for empty input, got nil")
 	}
 }
+
+func TestParseSSHSignature(t *testing.T) {
+	// Real signature from test commit
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgHpVAhPa0VjicN8t4wP2uySywzd
+N/bbil6aNgGZkFH1cAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJ1/uzhCGJADfc0WRMN7SE5/baAkAbqj2bmQh4xGv989iZm0UXDn6Rqy2PDWNJcl7D
+nd0VN4HEbSZQuZa8OG5Aw=
+-----END SSH SIGNATURE-----`
+
+	sig, err := ParseSSHSignature(armored)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if sig.KeyType != "ssh-ed25519" {
+		t.Errorf("got key type %s, want ssh-ed25519", sig.KeyType)
+	}
+	if sig.Namespace != "git" {
+		t.Errorf("got namespace %s, want git", sig.Namespace)
+	}
+	if sig.HashAlgorithm != "sha512" {
+		t.Errorf("got hash %s, want sha512", sig.HashAlgorithm)
+	}
+}
+
+func TestExtractSignerPublicKey(t *testing.T) {
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgHpVAhPa0VjicN8t4wP2uySywzd
+N/bbil6aNgGZkFH1cAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJ1/uzhCGJADfc0WRMN7SE5/baAkAbqj2bmQh4xGv989iZm0UXDn6Rqy2PDWNJcl7D
+nd0VN4HEbSZQuZa8OG5Aw=
+-----END SSH SIGNATURE-----`
+
+	pubkey, err := ExtractSignerSSHPublicKey(armored)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Convert to age and check it matches expected
+	ageRecipient, err := SSHPublicKeyToAgeRecipient(pubkey)
+	if err != nil {
+		t.Fatalf("unexpected error converting to age: %v", err)
+	}
+
+	expected := "age1rvuthlzew63h6huxn2xuly3jcgtw6tl665mguuy4alghealzn9dqwz8y7l"
+	if ageRecipient != expected {
+		t.Errorf("got %s, want %s", ageRecipient, expected)
+	}
+}
