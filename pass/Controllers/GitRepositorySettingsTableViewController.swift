@@ -196,8 +196,9 @@ class GitRepositorySettingsTableViewController: UITableViewController, PasswordA
                     checkoutProgressBlock: checkoutProgressBlock
                 )
 
-                let gpgIDFile = self.passwordStore.storeURL.appendingPathComponent(".gpg-id").path
-                guard FileManager.default.fileExists(atPath: gpgIDFile) else {
+                // Verify this is a valid password store (pass or passage)
+                let storeType = PasswordStoreType.detect(at: self.passwordStore.storeURL)
+                guard storeType != .unknown else {
                     self.passwordStore.eraseStoreData()
                     SVProgressHUD.dismiss {
                         DispatchQueue.main.async {
