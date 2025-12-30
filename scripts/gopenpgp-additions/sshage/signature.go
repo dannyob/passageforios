@@ -6,6 +6,9 @@ package sshage
 
 import (
 	"bytes"
+	"crypto/ed25519"
+	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
@@ -20,10 +23,12 @@ var sshsigMagic = []byte("SSHSIG")
 
 // Errors for signature parsing
 var (
-	ErrInvalidSignature    = errors.New("invalid SSH signature")
-	ErrUnsupportedVersion  = errors.New("unsupported SSHSIG version")
-	ErrInvalidMagic        = errors.New("invalid SSHSIG magic bytes")
-	ErrSignatureTruncated  = errors.New("signature data truncated")
+	ErrInvalidSignature      = errors.New("invalid SSH signature")
+	ErrUnsupportedVersion    = errors.New("unsupported SSHSIG version")
+	ErrInvalidMagic          = errors.New("invalid SSHSIG magic bytes")
+	ErrSignatureTruncated    = errors.New("signature data truncated")
+	ErrUnsupportedKeyType    = errors.New("unsupported key type for verification")
+	ErrUnsupportedHashAlgo   = errors.New("unsupported hash algorithm")
 )
 
 // SSHSignature represents a parsed SSH signature in SSHSIG format.
@@ -209,4 +214,126 @@ func ExtractSignerSSHPublicKey(armored string) ([]byte, error) {
 	// ssh.MarshalAuthorizedKey adds a newline, so we trim it
 	authorizedKey := ssh.MarshalAuthorizedKey(pubKey)
 	return bytes.TrimSpace(authorizedKey), nil
+}
+
+// VerifySSHSignature verifies an SSH signature against signed data.
+//
+// The verification process follows PROTOCOL.sshsig:
+// 1. Parse the signature to get the public key and signature blob
+// 2. Build the "signed data" structure that was actually signed
+// 3. Extract the raw ed25519 signature from the signature blob
+// 4. Verify using ed25519.Verify()
+//
+// Returns true if the signature is valid, false if invalid but parseable.
+// Returns an error if the signature cannot be parsed or uses unsupported algorithms.
+func VerifySSHSignature(armored string, signedData []byte) (bool, error) {
+	sig, err := ParseSSHSignature(armored)
+	if err != nil {
+		return false, err
+	}
+
+	// Currently only support ed25519
+	if sig.KeyType != "ssh-ed25519" {
+		return false, fmt.Errorf("%w: %s", ErrUnsupportedKeyType, sig.KeyType)
+	}
+
+	// Hash the message according to the hash algorithm
+	var messageHash []byte
+	switch sig.HashAlgorithm {
+	case "sha256":
+		h := sha256.Sum256(signedData)
+		messageHash = h[:]
+	case "sha512":
+		h := sha512.Sum512(signedData)
+		messageHash = h[:]
+	default:
+		return false, fmt.Errorf("%w: %s", ErrUnsupportedHashAlgo, sig.HashAlgorithm)
+	}
+
+	// Build the signed data structure per PROTOCOL.sshsig
+	// This is what the signer actually signed:
+	//   Magic: "SSHSIG" (6 bytes, NOT length-prefixed)
+	//   Namespace: string (length-prefixed)
+	//   Reserved: string (length-prefixed, empty)
+	//   Hash algorithm: string (length-prefixed)
+	//   Hash: string (length-prefixed)
+	var toVerify bytes.Buffer
+	toVerify.Write(sshsigMagic)
+	writeString(&toVerify, []byte(sig.Namespace))
+	writeString(&toVerify, []byte{}) // reserved, empty
+	writeString(&toVerify, []byte(sig.HashAlgorithm))
+	writeString(&toVerify, messageHash)
+
+	// Extract the raw ed25519 public key (32 bytes) from the SSH public key blob
+	// SSH public key format for ed25519: string "ssh-ed25519" + string <32-byte key>
+	pubKey, err := extractEd25519PublicKey(sig.PublicKey)
+	if err != nil {
+		return false, fmt.Errorf("extracting ed25519 public key: %w", err)
+	}
+
+	// Extract the raw ed25519 signature (64 bytes) from the signature blob
+	// SSH signature format: string "ssh-ed25519" + string <64-byte signature>
+	rawSig, err := extractEd25519Signature(sig.Signature)
+	if err != nil {
+		return false, fmt.Errorf("extracting ed25519 signature: %w", err)
+	}
+
+	// Verify the signature
+	return ed25519.Verify(pubKey, toVerify.Bytes(), rawSig), nil
+}
+
+// writeString writes a length-prefixed string to the buffer.
+func writeString(buf *bytes.Buffer, data []byte) {
+	length := make([]byte, 4)
+	binary.BigEndian.PutUint32(length, uint32(len(data)))
+	buf.Write(length)
+	buf.Write(data)
+}
+
+// extractEd25519PublicKey extracts the raw 32-byte ed25519 public key from an SSH public key blob.
+func extractEd25519PublicKey(blob []byte) (ed25519.PublicKey, error) {
+	// Format: string "ssh-ed25519" + string <32-byte key>
+	keyType, offset, err := readString(blob, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	if string(keyType) != "ssh-ed25519" {
+		return nil, fmt.Errorf("expected ssh-ed25519, got %s", string(keyType))
+	}
+
+	keyData, _, err := readString(blob, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(keyData) != ed25519.PublicKeySize {
+		return nil, fmt.Errorf("invalid ed25519 public key size: %d", len(keyData))
+	}
+
+	return ed25519.PublicKey(keyData), nil
+}
+
+// extractEd25519Signature extracts the raw 64-byte ed25519 signature from an SSH signature blob.
+func extractEd25519Signature(blob []byte) ([]byte, error) {
+	// Format: string "ssh-ed25519" + string <64-byte signature>
+	sigType, offset, err := readString(blob, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	if string(sigType) != "ssh-ed25519" {
+		return nil, fmt.Errorf("expected ssh-ed25519, got %s", string(sigType))
+	}
+
+	sigData, _, err := readString(blob, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(sigData) != ed25519.SignatureSize {
+		return nil, fmt.Errorf("invalid ed25519 signature size: %d", len(sigData))
+	}
+
+	return sigData, nil
 }

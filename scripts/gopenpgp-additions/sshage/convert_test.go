@@ -99,3 +99,80 @@ nd0VN4HEbSZQuZa8OG5Aw=
 		t.Errorf("got %s, want %s", ageRecipient, expected)
 	}
 }
+
+func TestVerifySSHSignature(t *testing.T) {
+	// Signature from a test git commit signed with ssh-ed25519
+	// The signature was created by: git commit -S -m "Test signed commit"
+	// with gpg.format=ssh and a known ed25519 key
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgemrT5mkFBsqMQpv+PFLyV1i+Bs
+zB353QhGPCCvuX/ewAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQOfxOeFKLQHK0tneuTrs7MSCdiRMtsigwwZ79o3ODBkdX9WZRv9UY8YXfoNERb0/g+
+jm2lbGXzCrVr4Mh57fiww=
+-----END SSH SIGNATURE-----`
+
+	// The signed data (commit object content without gpgsig header)
+	// This must include the trailing newline to match what git signs
+	signedData := []byte("tree aaa96ced2d9a1c8e72c56b253a0e2fe78393feb7\n" +
+		"author Test User <test@test.com> 1767136957 -0800\n" +
+		"committer Test User <test@test.com> 1767136957 -0800\n" +
+		"\n" +
+		"Test signed commit\n")
+
+	valid, err := VerifySSHSignature(armored, signedData)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !valid {
+		t.Error("expected valid signature")
+	}
+}
+
+func TestVerifySSHSignature_InvalidData(t *testing.T) {
+	// Same signature as above
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgemrT5mkFBsqMQpv+PFLyV1i+Bs
+zB353QhGPCCvuX/ewAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQOfxOeFKLQHK0tneuTrs7MSCdiRMtsigwwZ79o3ODBkdX9WZRv9UY8YXfoNERb0/g+
+jm2lbGXzCrVr4Mh57fiww=
+-----END SSH SIGNATURE-----`
+
+	// Tampered data - different author and message
+	signedData := []byte("tree aaa96ced2d9a1c8e72c56b253a0e2fe78393feb7\n" +
+		"author Evil Attacker <evil@attacker.com> 1767136957 -0800\n" +
+		"\n" +
+		"Malicious commit\n")
+
+	valid, err := VerifySSHSignature(armored, signedData)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if valid {
+		t.Error("expected invalid signature for tampered data")
+	}
+}
+
+func TestVerifySSHSignature_SubtleTampering(t *testing.T) {
+	// Same signature
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgemrT5mkFBsqMQpv+PFLyV1i+Bs
+zB353QhGPCCvuX/ewAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQOfxOeFKLQHK0tneuTrs7MSCdiRMtsigwwZ79o3ODBkdX9WZRv9UY8YXfoNERb0/g+
+jm2lbGXzCrVr4Mh57fiww=
+-----END SSH SIGNATURE-----`
+
+	// Single character change in tree hash
+	signedData := []byte("tree baa96ced2d9a1c8e72c56b253a0e2fe78393feb7\n" +
+		"author Test User <test@test.com> 1767136957 -0800\n" +
+		"committer Test User <test@test.com> 1767136957 -0800\n" +
+		"\n" +
+		"Test signed commit\n")
+
+	valid, err := VerifySSHSignature(armored, signedData)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if valid {
+		t.Error("expected invalid signature for subtly tampered data")
+	}
+}
