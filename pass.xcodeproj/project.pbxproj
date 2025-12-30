@@ -588,7 +588,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A26075811EEC6F34005DB03E /* passKit.framework in Frameworks */,
-				30A3002026DA91D7002A734E /* Base32 in Frameworks */,
 				30A3001C26DA91BF002A734E /* SwiftyUserDefaults in Frameworks */,
 				9A1D1CE726E5D2230052028E /* OneTimePassword in Frameworks */,
 			);
@@ -622,7 +621,6 @@
 				30333B2B2CF924DC008A2EA2 /* SVProgressHUD in Frameworks */,
 				3010CB6326DA4FE9008964D2 /* FavIcon in Frameworks */,
 				9A1F47FA26E5CF4B000C0E01 /* OneTimePassword in Frameworks */,
-				9A996C5326DDF61F00A4485D /* Base32 in Frameworks */,
 				3032DA5426DAF4C200A7728C /* ObjectivePGP in Frameworks */,
 				3010CB6626DA500F008964D2 /* KeychainAccess in Frameworks */,
 				9A996C5826DEB0D100A4485D /* passKit.framework in Frameworks */,
