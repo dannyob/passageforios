@@ -325,8 +325,16 @@ public class PasswordStore {
     }
 
     public func deleteCoreData() {
-        PasswordEntity.deleteAll(in: context)
-        PersistenceController.shared.save()
+        // Core Data viewContext must be accessed from main thread
+        if Thread.isMainThread {
+            PasswordEntity.deleteAll(in: context)
+            PersistenceController.shared.save()
+        } else {
+            DispatchQueue.main.sync {
+                PasswordEntity.deleteAll(in: context)
+                PersistenceController.shared.save()
+            }
+        }
     }
 
     public func eraseStoreData() {
