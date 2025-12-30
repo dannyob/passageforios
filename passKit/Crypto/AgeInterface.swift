@@ -3,7 +3,7 @@
 //  passKit
 //
 
-import Age // gomobile-generated framework
+import Crypto // combined gomobile-generated framework
 import Foundation
 
 public class AgeInterface: CryptoInterface {

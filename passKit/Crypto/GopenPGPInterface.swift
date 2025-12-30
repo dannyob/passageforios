@@ -6,7 +6,7 @@
 //  Copyright © 2019 Bob Sun. All rights reserved.
 //
 
-import Gopenpgp
+import Crypto
 
 struct GopenPGPInterface: PGPInterface {
     private static let errorMapping: [String: Error] = [

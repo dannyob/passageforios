@@ -6,8 +6,8 @@
 //  Copyright © 2024 Bob Sun. All rights reserved.
 //
 
+import Crypto
 import CryptoTokenKit
-import Gopenpgp
 import YubiKit
 
 public enum Algorithm {
@@ -65,7 +65,7 @@ public extension YKFSmartCardInterface {
 
         var error: NSError?
         let message = createPGPMessage(from: ciphertext)
-        guard let mpi1 = Gopenpgp.HelperPassGetEncryptedMPI1(message, &error) else {
+        guard let mpi1 = HelperPassGetEncryptedMPI1(message, &error) else {
             throw AppError.yubiKey(.decipher(message: "Failed to get encrypted MPI."))
         }
 

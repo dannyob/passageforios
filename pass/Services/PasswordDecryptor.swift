@@ -6,8 +6,8 @@
 //  Copyright © 2021 Bob Sun. All rights reserved.
 //
 
+import Crypto
 import CryptoTokenKit
-import Gopenpgp
 import passKit
 import SVProgressHUD
 import UIKit
@@ -116,12 +116,12 @@ private func decryptData(deciphered: Data, ciphertext: Data) throws -> Data {
         throw AppError.yubiKey(.decipher(message: "Failed to new session key."))
     }
 
-    guard let session_key = Gopenpgp.CryptoNewSessionKeyFromToken(deciphered[1 ..< deciphered.count - 2], algo) else {
+    guard let sessionKey = CryptoNewSessionKeyFromToken(deciphered[1 ..< deciphered.count - 2], algo) else {
         throw AppError.yubiKey(.decipher(message: "Failed to new session key."))
     }
 
     var error: NSError?
-    guard let plaintext = Gopenpgp.HelperPassDecryptWithSessionKey(message, session_key, &error)?.data else {
+    guard let plaintext = HelperPassDecryptWithSessionKey(message, sessionKey, &error)?.data else {
         throw AppError.yubiKey(.decipher(message: "Failed to decrypt with session key: \(String(describing: error))"))
     }
 

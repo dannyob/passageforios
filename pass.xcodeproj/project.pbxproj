@@ -137,11 +137,9 @@
 		9A58664825AAAB7E006719C2 /* SearchPassword.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A5865EF25AA944B006719C2 /* SearchPassword.storyboard */; };
 		9A58665125AADB76006719C2 /* CredentialProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A58665025AADB76006719C2 /* CredentialProvider.swift */; };
 		9A5C6EF42786CA5F0003F340 /* AlertPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5C6EEF2786C8710003F340 /* AlertPresenting.swift */; };
-		9A5C6EFF2787F0980003F340 /* Gopenpgp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Gopenpgp.xcframework */; };
-		DC7CBBDE2D0FAD08003BB4D2 /* Age.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7CBBDD2D0FAD08003BB4D2 /* Age.xcframework */; };
+		9A5C6EFF2787F0980003F340 /* Crypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Crypto.xcframework */; };
 		9A5C6F022787F09A0003F340 /* passKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A26075781EEC6F34005DB03E /* passKit.framework */; };
-		9A5C6F042787F09D0003F340 /* Gopenpgp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Gopenpgp.xcframework */; };
-		DC7CBBE02D0FAD09003BB4D2 /* Age.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7CBBDD2D0FAD08003BB4D2 /* Age.xcframework */; };
+		9A5C6F042787F09D0003F340 /* Crypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Crypto.xcframework */; };
 		9A5C6F082787F0C20003F340 /* SwiftyUserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 9A5C6F072787F0C20003F340 /* SwiftyUserDefaults */; };
 		9A5D06EE25A56F0800FA59D4 /* PasswordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F9EE1259EDD520027CE15 /* PasswordTableViewCell.swift */; };
 		9A5D06F525A56F0E00FA59D4 /* PasswordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F9EE1259EDD520027CE15 /* PasswordTableViewCell.swift */; };
@@ -159,8 +157,7 @@
 		9A996C6826DEB96B00A4485D /* passShortcuts.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 30A69945240EED5E00B7D967 /* passShortcuts.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9A996C6B26DEB97600A4485D /* passExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A26700241EEC466A00176B8A /* passExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9A996C6E26DEB99200A4485D /* passKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A26075781EEC6F34005DB03E /* passKit.framework */; };
-		9ADAB21D26DDA52400900F10 /* Gopenpgp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Gopenpgp.xcframework */; };
-		DC7CBBE22D0FAD0A003BB4D2 /* Age.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7CBBDD2D0FAD08003BB4D2 /* Age.xcframework */; };
+		9ADAB21D26DDA52400900F10 /* Crypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ADAB21C26DDA52400900F10 /* Crypto.xcframework */; };
 		9ADC954124418A5F0005402E /* PasswordStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ADC954024418A5F0005402E /* PasswordStoreTest.swift */; };
 		9AFC87D325B39FF3008D6060 /* PasswordNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFC87D225B39FF2008D6060 /* PasswordNavigationViewController.swift */; };
 		9AFC87E225B3B5C6008D6060 /* PasswordNavigationDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFC87E125B3B5C6008D6060 /* PasswordNavigationDataSource.swift */; };
@@ -455,8 +452,7 @@
 		9A8F9ECB259ECB410027CE15 /* PasswordSelectionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordSelectionDelegate.swift; sourceTree = "<group>"; };
 		9A8F9EE1259EDD520027CE15 /* PasswordTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordTableViewCell.swift; sourceTree = "<group>"; };
 		9A8F9F3F25A1A91F0027CE15 /* CredentialProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialProvider.swift; sourceTree = "<group>"; };
-		9ADAB21C26DDA52400900F10 /* Gopenpgp.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Gopenpgp.xcframework; path = go/dist/Gopenpgp.xcframework; sourceTree = "<group>"; };
-		DC7CBBDD2D0FAD08003BB4D2 /* Age.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Age.xcframework; path = go/dist/Age.xcframework; sourceTree = "<group>"; };
+		9ADAB21C26DDA52400900F10 /* Crypto.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Crypto.xcframework; path = go/dist/Crypto.xcframework; sourceTree = "<group>"; };
 		9ADC954024418A5F0005402E /* PasswordStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStoreTest.swift; sourceTree = "<group>"; };
 		9AFC87D225B39FF2008D6060 /* PasswordNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordNavigationViewController.swift; sourceTree = "<group>"; };
 		9AFC87E125B3B5C6008D6060 /* PasswordNavigationDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordNavigationDataSource.swift; sourceTree = "<group>"; };
@@ -562,8 +558,7 @@
 				5F9D7B0E27AF6FCA00A8AB22 /* CryptoTokenKit.framework in Frameworks */,
 				9A996C6E26DEB99200A4485D /* passKit.framework in Frameworks */,
 				30A3001A26DA697C002A734E /* SwiftyUserDefaults in Frameworks */,
-				9A5C6F042787F09D0003F340 /* Gopenpgp.xcframework in Frameworks */,
-				DC7CBBE02D0FAD09003BB4D2 /* Age.xcframework in Frameworks */,
+				9A5C6F042787F09D0003F340 /* Crypto.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,8 +567,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DC7CBBBD2D0FA3F2003BB4D2 /* YubiKit in Frameworks */,
-				9ADAB21D26DDA52400900F10 /* Gopenpgp.xcframework in Frameworks */,
-				DC7CBBE22D0FAD0A003BB4D2 /* Age.xcframework in Frameworks */,
+				9ADAB21D26DDA52400900F10 /* Crypto.xcframework in Frameworks */,
 				30A3001426DA6692002A734E /* KeychainAccess in Frameworks */,
 				9A996C5726DDF65900A4485D /* Base32 in Frameworks */,
 				9A1D1CE526E5D1CE0052028E /* OneTimePassword in Frameworks */,
@@ -599,8 +593,7 @@
 			files = (
 				5F9D7B0F27AF6FD200A8AB22 /* CryptoTokenKit.framework in Frameworks */,
 				9A5C6F022787F09A0003F340 /* passKit.framework in Frameworks */,
-				9A5C6EFF2787F0980003F340 /* Gopenpgp.xcframework in Frameworks */,
-				DC7CBBDE2D0FAD08003BB4D2 /* Age.xcframework in Frameworks */,
+				9A5C6EFF2787F0980003F340 /* Crypto.xcframework in Frameworks */,
 				9A5C6F082787F0C20003F340 /* SwiftyUserDefaults in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -823,8 +816,7 @@
 			children = (
 				5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */,
 				30F6C1B327664C7200BE5AB2 /* SVProgressHUD.xcframework */,
-				9ADAB21C26DDA52400900F10 /* Gopenpgp.xcframework */,
-				DC7CBBDD2D0FAD08003BB4D2 /* Age.xcframework */,
+				9ADAB21C26DDA52400900F10 /* Crypto.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
