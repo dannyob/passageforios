@@ -10,7 +10,6 @@ import passKit
 import UIKit
 
 class AgeIdentityImportTableViewController: UITableViewController {
-
     private var identityTextView: UITextView!
     private var saveBarButtonItem: UIBarButtonItem!
 
@@ -39,7 +38,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
             title: "Paste".localize(),
             style: .plain,
             target: self,
-            action: #selector(paste(_:))
+            action: #selector(pasteFromClipboard(_:))
         )
         navigationItem.leftBarButtonItem = pasteButton
 
@@ -50,15 +49,15 @@ class AgeIdentityImportTableViewController: UITableViewController {
 
     // MARK: - Table View
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    override func numberOfSections(in _: UITableView) -> Int {
         Section.allCases.count
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         1
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
         case .explanation:
             return nil
@@ -67,7 +66,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
         }
     }
 
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    override func tableView(_: UITableView, titleForFooterInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
         case .explanation:
             return "AgeIdentityImportExplanation.".localize()
@@ -150,7 +149,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
     }
 
     @objc
-    private func paste(_: Any) {
+    private func pasteFromClipboard(_: Any) {
         if let pasteboardString = UIPasteboard.general.string {
             identityTextView?.text = pasteboardString
             updateSaveButton()
@@ -170,7 +169,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
 }
 
 extension AgeIdentityImportTableViewController: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
+    func textViewDidChange(_: UITextView) {
         updateSaveButton()
         // Recalculate cell height
         tableView.beginUpdates()

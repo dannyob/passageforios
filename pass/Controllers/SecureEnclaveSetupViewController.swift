@@ -11,7 +11,6 @@ import passKit
 import UIKit
 
 class SecureEnclaveSetupViewController: UITableViewController {
-
     private var identity: SecureEnclaveIdentity?
     private var recipientString: String = ""
 
@@ -36,11 +35,11 @@ class SecureEnclaveSetupViewController: UITableViewController {
 
     // MARK: - Table View
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    override func numberOfSections(in _: UITableView) -> Int {
         Section.allCases.count
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch Section(rawValue: section)! {
         case .status:
             return 1
@@ -51,7 +50,7 @@ class SecureEnclaveSetupViewController: UITableViewController {
         }
     }
 
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section)! {
         case .status:
             return "Status".localize()

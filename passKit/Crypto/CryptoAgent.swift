@@ -10,7 +10,6 @@ import Foundation
 /// Unified crypto agent that delegates to PGP or age based on store type.
 /// Maintains backwards compatibility by defaulting to PGP for unknown stores.
 public class CryptoAgent {
-
     /// Shared instance for app-wide use
     public static var shared: CryptoAgent?
 
@@ -138,11 +137,20 @@ public class CryptoAgent {
         if pgpAgent == nil {
             pgpAgent = PGPAgent(keyStore: keyStore)
         }
-        guard let result = try pgpAgent?.decrypt(
-            encryptedData: encryptedData,
-            keyID: keyID,
-            requestPGPKeyPassphrase: requestPassphrase
-        ) else {
+        let result: Data?
+        if let keyID {
+            result = try pgpAgent?.decrypt(
+                encryptedData: encryptedData,
+                keyID: keyID,
+                requestPGPKeyPassphrase: requestPassphrase
+            )
+        } else {
+            result = try pgpAgent?.decrypt(
+                encryptedData: encryptedData,
+                requestPGPKeyPassphrase: requestPassphrase
+            )
+        }
+        guard let result else {
             throw CryptoError.decryptionFailed("PGP decryption returned nil")
         }
         return result
@@ -154,7 +162,7 @@ public class CryptoAgent {
         requestPassphrase: @escaping (String) -> String
     ) throws -> Data {
         // Try to initialize if not already done
-        if ageInterface == nil && secureEnclaveIdentity == nil {
+        if ageInterface == nil, secureEnclaveIdentity == nil {
             try initKeys()
         }
 
@@ -187,7 +195,7 @@ public class CryptoAgent {
 
     /// Decrypt using Secure Enclave identity
     private func decryptWithSecureEnclave(
-        encryptedData: Data,
+        encryptedData _: Data,
         identity _: SecureEnclaveIdentity
     ) throws -> Data {
         // Parse age file header to extract ephemeral key from stanza
@@ -259,11 +267,11 @@ public class CryptoAgent {
             return try pgpAgent?.getKeyID() ?? []
 
         case .passage:
-            if ageInterface == nil && secureEnclaveIdentity == nil {
+            if ageInterface == nil, secureEnclaveIdentity == nil {
                 try initKeys()
             }
-            if let se = secureEnclaveIdentity {
-                return [se.recipient]
+            if let enclaveIdentity = secureEnclaveIdentity {
+                return [enclaveIdentity.recipient]
             }
             if let age = ageInterface {
                 return [age.identityID]

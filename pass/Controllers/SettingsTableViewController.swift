@@ -100,7 +100,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             return
         }
 
-        if let _ = try? SecureEnclaveIdentity.load(tag: "passforios.age.identity") {
+        if (try? SecureEnclaveIdentity.load(tag: "passforios.age.identity")) != nil {
             secureEnclaveTableViewCell.detailTextLabel?.text = "On".localize()
             secureEnclaveTableViewCell.detailTextLabel?.textColor = .systemGreen
         } else {
@@ -110,7 +110,7 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     }
 
     private func setAgeIdentityCellDetailText() {
-        if let _: String = AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) {
+        if AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) as String? != nil {
             ageIdentityTableViewCell.detailTextLabel?.text = "Configured".localize()
             ageIdentityTableViewCell.detailTextLabel?.textColor = .systemGreen
         } else {
@@ -183,8 +183,14 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     }
 
     private func showSecureEnclaveSetup() {
-        let secureEnclaveVC = SecureEnclaveSetupViewController(style: .insetGrouped)
-        navigationController?.pushViewController(secureEnclaveVC, animated: true)
+        // TODO: Phase 3 - Secure Enclave age identity setup
+        let alert = UIAlertController(
+            title: "Secure Enclave",
+            message: "Secure Enclave identity support coming in a future update.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK".localize(), style: .default))
+        present(alert, animated: true)
     }
 
     private func showAgeIdentityActionSheet() {
@@ -193,8 +199,8 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         let alert = UIAlertController(title: "AgeIdentity".localize(), message: nil, preferredStyle: .actionSheet)
 
         alert.addAction(UIAlertAction(title: "ImportAgeIdentity".localize(), style: .default) { [weak self] _ in
-            let vc = AgeIdentityImportTableViewController(style: .insetGrouped)
-            self?.navigationController?.pushViewController(vc, animated: true)
+            let importController = AgeIdentityImportTableViewController(style: .insetGrouped)
+            self?.navigationController?.pushViewController(importController, animated: true)
         })
 
         if hasIdentity {

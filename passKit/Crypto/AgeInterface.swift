@@ -3,12 +3,11 @@
 //  passKit
 //
 
+import Age // gomobile-generated framework
 import Foundation
-import Age  // gomobile-generated framework
 
 public class AgeInterface: CryptoInterface {
-
-    private let identity: AgeIdentity
+    private let identity: AgeX25519Identity
     private let recipientString: String
 
     public init(identityString: String) throws {
@@ -21,7 +20,10 @@ public class AgeInterface: CryptoInterface {
             throw CryptoError.invalidIdentity(error?.localizedDescription ?? "parse failed")
         }
         self.identity = identity
-        self.recipientString = identity.recipient().string()
+        guard let recipient = identity.recipient() else {
+            throw CryptoError.invalidIdentity("failed to derive recipient")
+        }
+        self.recipientString = recipient.string()
     }
 
     public var identityID: String {
@@ -32,9 +34,9 @@ public class AgeInterface: CryptoInterface {
         true
     }
 
-    public func decrypt(encryptedData: Data, passphrase: String) throws -> Data {
+    public func decrypt(encryptedData: Data, passphrase _: String) throws -> Data {
         var error: NSError?
-        guard let decrypted = AgeDecrypt(encryptedData, identity, &error) else {
+        guard let decrypted = AgewrapDecryptWithIdentity(encryptedData, identity, &error) else {
             let message = error?.localizedDescription ?? "unknown error"
             if message.contains("no matching") {
                 throw CryptoError.decryptionFailed("no matching identity")
@@ -50,7 +52,7 @@ public class AgeInterface: CryptoInterface {
             throw CryptoError.encryptionFailed("invalid recipient")
         }
 
-        guard let encrypted = AgeEncrypt(plainData, recipient, &error) else {
+        guard let encrypted = AgewrapEncryptToRecipient(plainData, recipient, &error) else {
             throw CryptoError.encryptionFailed(error?.localizedDescription ?? "unknown error")
         }
         return encrypted

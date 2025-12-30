@@ -9,8 +9,8 @@ import Foundation
 
 /// Type of password store (pass with GPG, or passage with age)
 public enum PasswordStoreType: Equatable {
-    case pass      // Traditional pass with .gpg files
-    case passage   // passage with .age files
+    case pass // Traditional pass with .gpg files
+    case passage // passage with .age files
     case unknown
 
     /// File extension for encrypted password files
@@ -38,12 +38,12 @@ public enum PasswordStoreType: Equatable {
     }
 
     /// Detect store type from directory contents
-    public static func detect(at url: URL) -> PasswordStoreType {
+    public static func detect(at url: URL) -> Self {
         let fileManager = FileManager.default
 
         // Check for .gpg-id (pass)
-        let gpgIdPath = url.appendingPathComponent(".gpg-id")
-        if fileManager.fileExists(atPath: gpgIdPath.path) {
+        let gpgIDPath = url.appendingPathComponent(".gpg-id")
+        if fileManager.fileExists(atPath: gpgIDPath.path) {
             return .pass
         }
 
@@ -66,7 +66,7 @@ public enum PasswordStoreType: Equatable {
         }
 
         // Fallback: check for .gpg files (pass without .gpg-id)
-        if hasGpgFiles(at: url) {
+        if hasGPGFiles(at: url) {
             return .pass
         }
 
@@ -79,7 +79,7 @@ public enum PasswordStoreType: Equatable {
     }
 
     /// Check if directory contains any .gpg files (recursively, limited depth)
-    private static func hasGpgFiles(at url: URL) -> Bool {
+    private static func hasGPGFiles(at url: URL) -> Bool {
         hasFiles(withExtension: "gpg", at: url)
     }
 

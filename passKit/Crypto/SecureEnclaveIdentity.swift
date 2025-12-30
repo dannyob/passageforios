@@ -8,7 +8,6 @@ import Foundation
 
 /// P-256 identity stored in the iOS Secure Enclave, exportable as age1tag recipient
 public class SecureEnclaveIdentity {
-
     private let privateKey: SecureEnclave.P256.KeyAgreement.PrivateKey
     private let tag: String
 

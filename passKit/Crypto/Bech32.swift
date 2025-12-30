@@ -5,9 +5,10 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
+
 /// Bech32/Bech32m encoding for age recipient strings
 public enum Bech32 {
-
     public enum Error: Swift.Error {
         case invalidCharacter
         case invalidChecksum
@@ -73,11 +74,11 @@ public enum Bech32 {
             bits += 8
             while bits >= 5 {
                 bits -= 5
-                result.append(UInt8((acc >> bits) & 0x1f))
+                result.append(UInt8((acc >> bits) & 0x1F))
             }
         }
         if bits > 0 {
-            result.append(UInt8((acc << (5 - bits)) & 0x1f))
+            result.append(UInt8((acc << (5 - bits)) & 0x1F))
         }
         return result
     }
@@ -92,22 +93,20 @@ public enum Bech32 {
             bits += 5
             while bits >= 8 {
                 bits -= 8
-                result.append(UInt8((acc >> bits) & 0xff))
+                result.append(UInt8((acc >> bits) & 0xFF))
             }
         }
         return Data(result)
     }
 
     private static func polymod(_ values: [UInt8]) -> UInt32 {
-        let gen: [UInt32] = [0x3b6a_57b2, 0x2650_8e6d, 0x1ea1_19fa, 0x3d42_33dd, 0x2a14_62b3]
+        let gen: [UInt32] = [0x3B6A_57B2, 0x2650_8E6D, 0x1EA1_19FA, 0x3D42_33DD, 0x2A14_62B3]
         var chk: UInt32 = 1
         for v in values {
             let top = chk >> 25
-            chk = ((chk & 0x01ff_ffff) << 5) ^ UInt32(v)
-            for i in 0 ..< 5 {
-                if ((top >> i) & 1) == 1 {
-                    chk ^= gen[i]
-                }
+            chk = ((chk & 0x01FF_FFFF) << 5) ^ UInt32(v)
+            for i in 0 ..< 5 where ((top >> i) & 1) == 1 {
+                chk ^= gen[i]
             }
         }
         return chk
