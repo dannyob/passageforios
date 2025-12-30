@@ -2,6 +2,7 @@
 package sshage
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -174,5 +175,29 @@ jm2lbGXzCrVr4Mh57fiww=
 	}
 	if valid {
 		t.Error("expected invalid signature for subtly tampered data")
+	}
+}
+
+func TestVerifySSHSignature_WrongNamespace(t *testing.T) {
+	// This signature has namespace "file" instead of "git"
+	// Created by modifying the namespace field in a valid signature.
+	// The original "git" (3 bytes) was replaced with "file" (4 bytes), adjusting the length prefix.
+	// This tests protection against signature confusion attacks where a file signature
+	// could be misused to verify a git commit.
+	armored := `-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgemrT5mkFBsqMQpv+PFLyV1i+BszB353QhGPCCvuX/ewAAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUxOQAAAEDn8TnhSi0BytLZ3rk67OzEgnYkTLbIoMMGe/aNzgwZHV/VmUb/VGPGF36DREW9P4Po5tpWxl8wq1a+DIee34sM
+-----END SSH SIGNATURE-----`
+
+	signedData := []byte("test data")
+
+	_, err := VerifySSHSignature(armored, signedData)
+	if err == nil {
+		t.Fatal("expected error for wrong namespace")
+	}
+	if !strings.Contains(err.Error(), "wrong signature namespace") {
+		t.Errorf("expected namespace error, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "file") {
+		t.Errorf("expected error to mention 'file' namespace, got: %v", err)
 	}
 }

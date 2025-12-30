@@ -29,6 +29,7 @@ var (
 	ErrSignatureTruncated    = errors.New("signature data truncated")
 	ErrUnsupportedKeyType    = errors.New("unsupported key type for verification")
 	ErrUnsupportedHashAlgo   = errors.New("unsupported hash algorithm")
+	ErrWrongNamespace        = errors.New("wrong signature namespace")
 )
 
 // SSHSignature represents a parsed SSH signature in SSHSIG format.
@@ -230,6 +231,12 @@ func VerifySSHSignature(armored string, signedData []byte) (bool, error) {
 	sig, err := ParseSSHSignature(armored)
 	if err != nil {
 		return false, err
+	}
+
+	// Validate namespace to prevent signature confusion attacks.
+	// A signature created for namespace "file" should not verify as a "git" commit signature.
+	if sig.Namespace != "git" {
+		return false, fmt.Errorf("%w: got %q, expected \"git\"", ErrWrongNamespace, sig.Namespace)
 	}
 
 	// Currently only support ed25519
