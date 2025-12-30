@@ -7,7 +7,6 @@ import XCTest
 @testable import passKit
 
 final class AgeInterfaceTest: XCTestCase {
-
     private let testPlaintext = Data("Hello, passage!".utf8)
 
     // Test identity (DO NOT use in production - for testing only)

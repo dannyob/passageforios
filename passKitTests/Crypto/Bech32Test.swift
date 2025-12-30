@@ -7,7 +7,6 @@ import XCTest
 @testable import passKit
 
 final class Bech32Test: XCTestCase {
-
     func testEncodeDecodeRoundTrip() throws {
         let testData = Data([0x01, 0x02, 0x03, 0x04, 0x05])
         let encoded = try Bech32.encode(hrp: "age1tag", data: testData)

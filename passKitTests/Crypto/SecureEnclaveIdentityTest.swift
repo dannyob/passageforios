@@ -8,7 +8,6 @@ import XCTest
 @testable import passKit
 
 final class SecureEnclaveIdentityTest: XCTestCase {
-
     func testGenerateIdentityProducesAge1TagRecipient() throws {
         // Skip if Secure Enclave not available (simulator)
         guard SecureEnclave.isAvailable else {

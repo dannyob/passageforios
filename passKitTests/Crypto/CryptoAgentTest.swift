@@ -7,9 +7,8 @@ import XCTest
 @testable import passKit
 
 final class CryptoAgentTest: XCTestCase {
-
-    var tempDir: URL!
-    var keychain: KeyStore!
+    private var tempDir: URL!
+    private var keychain: KeyStore!
 
     override func setUp() {
         super.setUp()
@@ -39,10 +38,10 @@ final class CryptoAgentTest: XCTestCase {
         XCTAssertEqual(agent.storeType, .passage)
     }
 
-    func testDetectsPassStoreWithGpgId() throws {
+    func testDetectsPassStoreWithGPGID() throws {
         // Create .gpg-id file (pass store marker)
-        let gpgIdFile = tempDir.appendingPathComponent(".gpg-id")
-        try "ABCD1234".write(to: gpgIdFile, atomically: true, encoding: .utf8)
+        let gpgIDFile = tempDir.appendingPathComponent(".gpg-id")
+        try "ABCD1234".write(to: gpgIDFile, atomically: true, encoding: .utf8)
 
         let agent = CryptoAgent(storeURL: tempDir, keyStore: keychain)
         XCTAssertEqual(agent.storeType, .pass)

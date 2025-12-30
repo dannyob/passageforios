@@ -10,7 +10,7 @@ import XCTest
 @testable import passKit
 
 final class PasswordStoreTypeTest: XCTestCase {
-    var tempDir: URL!
+    private var tempDir: URL!
 
     override func setUp() {
         super.setUp()
@@ -26,8 +26,8 @@ final class PasswordStoreTypeTest: XCTestCase {
 
     func testDetectsPassStore() throws {
         // Create .gpg-id file
-        let gpgIdFile = tempDir.appendingPathComponent(".gpg-id")
-        try "ABCD1234".write(to: gpgIdFile, atomically: true, encoding: .utf8)
+        let gpgIDFile = tempDir.appendingPathComponent(".gpg-id")
+        try "ABCD1234".write(to: gpgIDFile, atomically: true, encoding: .utf8)
 
         let storeType = PasswordStoreType.detect(at: tempDir)
         XCTAssertEqual(storeType, .pass)
@@ -62,7 +62,7 @@ final class PasswordStoreTypeTest: XCTestCase {
         XCTAssertEqual(storeType, .passage)
     }
 
-    func testDetectsPassStoreByGpgFiles() throws {
+    func testDetectsPassStoreByGPGFiles() throws {
         // pass stores without .gpg-id marker
         let passwordDir = tempDir.appendingPathComponent("passwords")
         try FileManager.default.createDirectory(at: passwordDir, withIntermediateDirectories: true)
