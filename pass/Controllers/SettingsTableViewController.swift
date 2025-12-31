@@ -100,11 +100,16 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             return
         }
 
-        if (try? SecureEnclaveIdentity.load(tag: "passforios.age.identity")) != nil {
-            secureEnclaveTableViewCell.detailTextLabel?.text = "On".localize()
-            secureEnclaveTableViewCell.detailTextLabel?.textColor = .systemGreen
+        if #available(iOS 16.0, *) {
+            if (try? SecureEnclaveIdentity.load(tag: "passforios.age.identity")) != nil {
+                secureEnclaveTableViewCell.detailTextLabel?.text = "On".localize()
+                secureEnclaveTableViewCell.detailTextLabel?.textColor = .systemGreen
+            } else {
+                secureEnclaveTableViewCell.detailTextLabel?.text = "NotSet".localize()
+                secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+            }
         } else {
-            secureEnclaveTableViewCell.detailTextLabel?.text = "NotSet".localize()
+            secureEnclaveTableViewCell.detailTextLabel?.text = "N/A"
             secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
         }
     }

@@ -10,6 +10,7 @@ import CryptoKit
 import passKit
 import UIKit
 
+@available(iOS 16.0, *)
 class SecureEnclaveSetupViewController: UITableViewController {
     private var identity: SecureEnclaveIdentity?
     private var recipientString: String = ""

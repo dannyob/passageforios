@@ -31,7 +31,12 @@ public class CryptoAgent {
     // Lazy-loaded crypto backends
     private var pgpAgent: PGPAgent?
     private var ageInterface: AgeInterface?
-    private var secureEnclaveIdentity: SecureEnclaveIdentity?
+    private var _secureEnclaveIdentity: Any?
+
+    @available(iOS 16.0, *) private var secureEnclaveIdentity: SecureEnclaveIdentity? {
+        get { _secureEnclaveIdentity as? SecureEnclaveIdentity }
+        set { _secureEnclaveIdentity = newValue }
+    }
 
     // Track decryption status for passphrase caching
     private var latestDecryptStatus = true
@@ -57,9 +62,11 @@ public class CryptoAgent {
                 && keyStore.contains(key: PGPKey.PRIVATE.getKeychainKey())
 
         case .passage:
-            // Check for Secure Enclave identity first
-            if (try? SecureEnclaveIdentity.load(tag: Self.secureEnclaveIdentityTag)) != nil {
-                return true
+            // Check for Secure Enclave identity first (iOS 16+)
+            if #available(iOS 16.0, *) {
+                if (try? SecureEnclaveIdentity.load(tag: Self.secureEnclaveIdentityTag)) != nil {
+                    return true
+                }
             }
             // Check for software identity in keychain
             return keyStore.contains(key: Self.ageIdentityKeychainKey)
@@ -79,10 +86,12 @@ public class CryptoAgent {
             try pgpAgent?.initKeys()
 
         case .passage:
-            // Try Secure Enclave first
-            if let seIdentity = try? SecureEnclaveIdentity.load(tag: Self.secureEnclaveIdentityTag) {
-                secureEnclaveIdentity = seIdentity
-                return
+            // Try Secure Enclave first (iOS 16+)
+            if #available(iOS 16.0, *) {
+                if let seIdentity = try? SecureEnclaveIdentity.load(tag: Self.secureEnclaveIdentityTag) {
+                    secureEnclaveIdentity = seIdentity
+                    return
+                }
             }
             // Fall back to software identity from keychain
             guard let identityString: String = keyStore.get(for: Self.ageIdentityKeychainKey) else {
@@ -100,7 +109,7 @@ public class CryptoAgent {
         pgpAgent?.uninitKeys()
         pgpAgent = nil
         ageInterface = nil
-        secureEnclaveIdentity = nil
+        _secureEnclaveIdentity = nil
     }
 
     // MARK: - Decryption
@@ -162,13 +171,18 @@ public class CryptoAgent {
         requestPassphrase _: @escaping (String) -> String
     ) throws -> Data {
         // Try to initialize if not already done
-        if ageInterface == nil, secureEnclaveIdentity == nil {
-            try initKeys()
-        }
-
-        // Try Secure Enclave identity first
-        if let seIdentity = secureEnclaveIdentity {
-            return try decryptWithSecureEnclave(encryptedData: encryptedData, identity: seIdentity)
+        if #available(iOS 16.0, *) {
+            if ageInterface == nil, secureEnclaveIdentity == nil {
+                try initKeys()
+            }
+            // Try Secure Enclave identity first
+            if let seIdentity = secureEnclaveIdentity {
+                return try decryptWithSecureEnclave(encryptedData: encryptedData, identity: seIdentity)
+            }
+        } else {
+            if ageInterface == nil {
+                try initKeys()
+            }
         }
 
         // Fall back to software identity
@@ -181,6 +195,7 @@ public class CryptoAgent {
     }
 
     /// Decrypt using Secure Enclave identity
+    @available(iOS 16.0, *)
     private func decryptWithSecureEnclave(
         encryptedData _: Data,
         identity _: SecureEnclaveIdentity
@@ -254,11 +269,17 @@ public class CryptoAgent {
             return try pgpAgent?.getKeyID() ?? []
 
         case .passage:
-            if ageInterface == nil, secureEnclaveIdentity == nil {
-                try initKeys()
-            }
-            if let enclaveIdentity = secureEnclaveIdentity {
-                return [enclaveIdentity.recipient]
+            if #available(iOS 16.0, *) {
+                if ageInterface == nil, secureEnclaveIdentity == nil {
+                    try initKeys()
+                }
+                if let enclaveIdentity = secureEnclaveIdentity {
+                    return [enclaveIdentity.recipient]
+                }
+            } else {
+                if ageInterface == nil {
+                    try initKeys()
+                }
             }
             if let age = ageInterface {
                 return [age.identityID]

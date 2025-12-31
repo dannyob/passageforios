@@ -7,6 +7,7 @@ import CryptoKit
 import Foundation
 
 /// P-256 identity stored in the iOS Secure Enclave, exportable as age1tag recipient
+@available(iOS 16.0, *)
 public class SecureEnclaveIdentity {
     private let privateKey: SecureEnclave.P256.KeyAgreement.PrivateKey
     private let tag: String
@@ -17,8 +18,8 @@ public class SecureEnclaveIdentity {
 
     /// The age1tag1... recipient string for this identity
     public var recipient: String {
-        let pubKeyData = publicKey.rawRepresentation
-        // age1tag format: HRP + compressed P-256 point
+        let pubKeyData = publicKey.compressedRepresentation
+        // age1tag format: HRP + compressed P-256 point (33 bytes)
         return (try? Bech32.encode(hrp: "age1tag", data: pubKeyData)) ?? ""
     }
 
