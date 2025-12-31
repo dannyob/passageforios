@@ -114,6 +114,7 @@
 		5F9D7B0E27AF6FCA00A8AB22 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5F9D7B0F27AF6FD200A8AB22 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		637AA095504CEEC2A25A4555 /* CommitSignatureVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */; };
+		DC7A8B012D730001003BB4D2 /* TrustManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7A8B002D730001003BB4D2 /* TrustManager.swift */; };
 		9A1D1CE526E5D1CE0052028E /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1D1CE426E5D1CE0052028E /* OneTimePassword */; };
 		9A1D1CE726E5D2230052028E /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1D1CE626E5D2230052028E /* OneTimePassword */; };
 		9A1F47FA26E5CF4B000C0E01 /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1F47F926E5CF4B000C0E01 /* OneTimePassword */; };
@@ -428,6 +429,7 @@
 		30FD2F77214D9E0E005E0A92 /* ParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTest.swift; sourceTree = "<group>"; };
 		5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoTokenKit.framework; path = System/Library/Frameworks/CryptoTokenKit.framework; sourceTree = SDKROOT; };
 		983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CommitSignatureVerifier.swift; sourceTree = "<group>"; };
+		DC7A8B002D730001003BB4D2 /* TrustManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrustManager.swift; sourceTree = "<group>"; };
 		9A1EF0B324C50DD80074FEAC /* passBeta.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBeta.entitlements; sourceTree = "<group>"; };
 		9A1EF0B424C50E780074FEAC /* passBetaAutoFillExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBetaAutoFillExtension.entitlements; sourceTree = "<group>"; };
 		9A1EF0B524C50EE00074FEAC /* passBetaExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBetaExtension.entitlements; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 				30CCA91523258C380048CA51 /* PGPInterface.swift */,
 				DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */,
 				983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */,
+				DC7A8B002D730001003BB4D2 /* TrustManager.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -1644,6 +1647,7 @@
 				30697C4421F63CAB0064FCAC /* PasswordEntity.swift in Sources */,
 				30BAC8CD22E3BB9700438475 /* KeyStore.swift in Sources */,
 				637AA095504CEEC2A25A4555 /* CommitSignatureVerifier.swift in Sources */,
+				DC7A8B012D730001003BB4D2 /* TrustManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
