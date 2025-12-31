@@ -140,9 +140,15 @@ class SecureEnclaveSetupViewController: UITableViewController {
 
     private func doGenerate() {
         do {
+            #if targetEnvironment(simulator)
+                let requireBiometric = false
+            #else
+                let requireBiometric = true
+            #endif
+
             identity = try SecureEnclaveIdentity.generate(
                 tag: "passforios.age.identity",
-                requireBiometric: true
+                requireBiometric: requireBiometric
             )
             recipientString = identity?.recipient ?? ""
             tableView.reloadData()

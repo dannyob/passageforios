@@ -190,14 +190,23 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     }
 
     private func showSecureEnclaveSetup() {
-        // Secure Enclave age identity setup planned for Phase 3
-        let alert = UIAlertController(
-            title: "Secure Enclave",
-            message: "Secure Enclave identity support coming in a future update.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK".localize(), style: .default))
-        present(alert, animated: true)
+        if #available(iOS 16.0, *) {
+            pushSecureEnclaveSetupViewController()
+        } else {
+            let alert = UIAlertController(
+                title: "Secure Enclave",
+                message: "Secure Enclave identity requires iOS 16 or later.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK".localize(), style: .default))
+            present(alert, animated: true)
+        }
+    }
+
+    @available(iOS 16.0, *)
+    private func pushSecureEnclaveSetupViewController() {
+        let setupVC = SecureEnclaveSetupViewController(style: .insetGrouped)
+        navigationController?.pushViewController(setupVC, animated: true)
     }
 
     private func showAgeIdentityActionSheet() {
