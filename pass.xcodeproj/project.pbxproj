@@ -76,7 +76,6 @@
 		30A3001826DA6974002A734E /* SwiftyUserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 30A3001726DA6974002A734E /* SwiftyUserDefaults */; };
 		30A3001A26DA697C002A734E /* SwiftyUserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 30A3001926DA697C002A734E /* SwiftyUserDefaults */; };
 		30A3001C26DA91BF002A734E /* SwiftyUserDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = 30A3001B26DA91BF002A734E /* SwiftyUserDefaults */; };
-		30A3002026DA91D7002A734E /* Base32 in Frameworks */ = {isa = PBXBuildFile; productRef = 30A3001F26DA91D7002A734E /* Base32 */; };
 		30A69948240EED5E00B7D967 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A69947240EED5E00B7D967 /* IntentHandler.swift */; };
 		30A86F95230F237000F821A4 /* CryptoFrameworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A86F94230F237000F821A4 /* CryptoFrameworkTest.swift */; };
 		30B00F5526D59562004DAC61 /* PasscodeLockViewControllerForExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B00F5426D59562004DAC61 /* PasscodeLockViewControllerForExtension.swift */; };
@@ -149,8 +148,6 @@
 		9A8F9EBD259EA4C50027CE15 /* PasswordsTableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F9EBC259EA4C50027CE15 /* PasswordsTableDataSource.swift */; };
 		9A8F9ECC259ECB410027CE15 /* PasswordSelectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F9ECB259ECB410027CE15 /* PasswordSelectionDelegate.swift */; };
 		9A8F9F4025A1A91F0027CE15 /* CredentialProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8F9F3F25A1A91F0027CE15 /* CredentialProvider.swift */; };
-		9A996C5326DDF61F00A4485D /* Base32 in Frameworks */ = {isa = PBXBuildFile; productRef = 9A996C5226DDF61F00A4485D /* Base32 */; };
-		9A996C5726DDF65900A4485D /* Base32 in Frameworks */ = {isa = PBXBuildFile; productRef = 9A996C5626DDF65900A4485D /* Base32 */; };
 		9A996C5826DEB0D100A4485D /* passKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A26075781EEC6F34005DB03E /* passKit.framework */; };
 		9A996C5926DEB0D200A4485D /* passKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A26075781EEC6F34005DB03E /* passKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9A996C6426DEB93F00A4485D /* passAutoFillExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A239F5952158C08B00576CBF /* passAutoFillExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -569,7 +566,6 @@
 				DC7CBBBD2D0FA3F2003BB4D2 /* YubiKit in Frameworks */,
 				9ADAB21D26DDA52400900F10 /* Crypto.xcframework in Frameworks */,
 				30A3001426DA6692002A734E /* KeychainAccess in Frameworks */,
-				9A996C5726DDF65900A4485D /* Base32 in Frameworks */,
 				9A1D1CE526E5D1CE0052028E /* OneTimePassword in Frameworks */,
 				30333B2D2CF9252E008A2EA2 /* SVProgressHUD in Frameworks */,
 				30A3001626DA6697002A734E /* SwiftyUserDefaults in Frameworks */,
@@ -1189,7 +1185,6 @@
 				30A3001326DA6692002A734E /* KeychainAccess */,
 				30A3001526DA6697002A734E /* SwiftyUserDefaults */,
 				3032DA5526DAF4E500A7728C /* ObjectivePGP */,
-				9A996C5626DDF65900A4485D /* Base32 */,
 				9A1D1CE426E5D1CE0052028E /* OneTimePassword */,
 				30333B2C2CF9252E008A2EA2 /* SVProgressHUD */,
 				DC7CBBBC2D0FA3F2003BB4D2 /* YubiKit */,
@@ -1215,7 +1210,6 @@
 			name = passKitTests;
 			packageProductDependencies = (
 				30A3001B26DA91BF002A734E /* SwiftyUserDefaults */,
-				30A3001F26DA91D7002A734E /* Base32 */,
 				9A1D1CE626E5D2230052028E /* OneTimePassword */,
 			);
 			productName = passKitTests;
@@ -1290,7 +1284,6 @@
 				3010CB6226DA4FE9008964D2 /* FavIcon */,
 				3010CB6526DA500F008964D2 /* KeychainAccess */,
 				3032DA5326DAF4C200A7728C /* ObjectivePGP */,
-				9A996C5226DDF61F00A4485D /* Base32 */,
 				9A1F47F926E5CF4B000C0E01 /* OneTimePassword */,
 				30ED1776276F8842009BA876 /* ObjectiveGit */,
 				30333B2A2CF924DC008A2EA2 /* SVProgressHUD */,
@@ -1557,7 +1550,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -xe\n\nfind -L \"${BUILT_PRODUCTS_DIR}\" -type d -path \"*.appex/Frameworks\" -o -path \"*.framework/Frameworks\" -maxdepth 2 | xargs rm -rf\n";
+			shellScript = "set -xe\n\n# Remove nested Frameworks directories\nfind -L \"${BUILT_PRODUCTS_DIR}\" -type d -path \"*.appex/Frameworks\" -o -path \"*.framework/Frameworks\" -maxdepth 2 | xargs rm -rf\n\n# Note: Base32 duplicate class warning is expected - OneTimePassword dynamically links Base32,\n# but it's also embedded in passKit. The warning is harmless.\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3040,11 +3033,6 @@
 			package = 3010CB5E26DA4F87008964D2 /* XCRemoteSwiftPackageReference "SwiftyUserDefaults" */;
 			productName = SwiftyUserDefaults;
 		};
-		30A3001F26DA91D7002A734E /* Base32 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 30A3000C26DA62F4002A734E /* XCRemoteSwiftPackageReference "Base32" */;
-			productName = Base32;
-		};
 		30ED1776276F8842009BA876 /* ObjectiveGit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 30ED1775276F8842009BA876 /* XCRemoteSwiftPackageReference "objective-git-swift-package" */;
@@ -3069,16 +3057,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3010CB5E26DA4F87008964D2 /* XCRemoteSwiftPackageReference "SwiftyUserDefaults" */;
 			productName = SwiftyUserDefaults;
-		};
-		9A996C5226DDF61F00A4485D /* Base32 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 30A3000C26DA62F4002A734E /* XCRemoteSwiftPackageReference "Base32" */;
-			productName = Base32;
-		};
-		9A996C5626DDF65900A4485D /* Base32 */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 30A3000C26DA62F4002A734E /* XCRemoteSwiftPackageReference "Base32" */;
-			productName = Base32;
 		};
 		DC7CBBBC2D0FA3F2003BB4D2 /* YubiKit */ = {
 			isa = XCSwiftPackageProductDependency;

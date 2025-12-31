@@ -197,12 +197,17 @@ class GitRepositorySettingsTableViewController: UITableViewController, PasswordA
                 )
 
                 // Verify this is a valid password store (pass or passage)
-                let storeType = PasswordStoreType.detect(at: self.passwordStore.storeURL)
+                let storeURL = self.passwordStore.storeURL
+                let storeType = PasswordStoreType.detect(at: storeURL)
                 guard storeType != .unknown else {
+                    // List files at root to help debug detection issues
+                    let contents = (try? FileManager.default.contentsOfDirectory(atPath: storeURL.path)) ?? []
+                    let rootFiles = contents.prefix(10).joined(separator: ", ")
                     self.passwordStore.eraseStoreData()
                     SVProgressHUD.dismiss {
                         DispatchQueue.main.async {
-                            Utils.alert(title: "Error".localize(), message: "NoProperPassRepo.".localize(), controller: self)
+                            let message = "NoProperPassRepo.".localize() + "\n\nRoot files: \(rootFiles)"
+                            Utils.alert(title: "Error".localize(), message: message, controller: self)
                         }
                     }
                     return
