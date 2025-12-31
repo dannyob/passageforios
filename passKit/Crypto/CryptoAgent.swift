@@ -159,7 +159,7 @@ public class CryptoAgent {
     /// Decrypt with age (uses AgeInterface or SecureEnclaveIdentity)
     private func decryptWithAge(
         encryptedData: Data,
-        requestPassphrase: @escaping (String) -> String
+        requestPassphrase _: @escaping (String) -> String
     ) throws -> Data {
         // Try to initialize if not already done
         if ageInterface == nil, secureEnclaveIdentity == nil {
@@ -176,21 +176,8 @@ public class CryptoAgent {
             throw CryptoError.identityNotFound
         }
 
-        // Remember the previous status and set the current status
-        let previousDecryptStatus = latestDecryptStatus
-        latestDecryptStatus = false
-
-        // Get passphrase (age identities may be passphrase-protected in the future)
-        var passphrase = ""
-        if !previousDecryptStatus {
-            passphrase = requestPassphrase("")
-        } else {
-            passphrase = keyStore.get(for: Globals.pgpKeyPassphrase) ?? requestPassphrase("")
-        }
-
-        let result = try age.decrypt(encryptedData: encryptedData, passphrase: passphrase)
-        latestDecryptStatus = true
-        return result
+        // Age X25519 identities don't use passphrases - they're unencrypted secret keys
+        return try age.decrypt(encryptedData: encryptedData, passphrase: "")
     }
 
     /// Decrypt using Secure Enclave identity

@@ -57,7 +57,6 @@ public enum TrustManagerError: Error, Equatable {
 /// Trust state is stored locally in `.passage-trust.json` and added to `.gitignore`
 /// to prevent syncing across devices.
 public class TrustManager {
-
     /// Trust state stored per repository
     public struct TrustState: Codable, Equatable {
         /// SHA of the last successfully verified commit
@@ -113,8 +112,7 @@ public class TrustManager {
 
         do {
             let data = try Data(contentsOf: trustStateFileURL)
-            let state = try JSONDecoder().decode(TrustState.self, from: data)
-            return state
+            return try JSONDecoder().decode(TrustState.self, from: data)
         } catch {
             // If we can't load the trust state, treat it as if it doesn't exist
             return nil
@@ -382,7 +380,7 @@ public class TrustManager {
         }
 
         // Add entry
-        if !content.isEmpty && !content.hasSuffix("\n") {
+        if !content.isEmpty, !content.hasSuffix("\n") {
             content += "\n"
         }
         content += entry + "\n"

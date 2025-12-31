@@ -554,7 +554,9 @@ extension PasswordNavigationViewController: PasswordAlertPresenter {
 
     /// Handle trust verification after a successful pull/sync
     func handleTrustVerification() {
-        guard PasswordStore.shared.requiresTrustVerification else { return }
+        guard PasswordStore.shared.requiresTrustVerification else {
+            return
+        }
 
         do {
             let result = try PasswordStore.shared.verifyAfterPull()
@@ -588,7 +590,9 @@ extension PasswordNavigationViewController: PasswordAlertPresenter {
             do {
                 try PasswordStore.shared.initializeTrust()
             } catch {
-                guard let self else { return }
+                guard let self else {
+                    return
+                }
                 Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
             }
         })
@@ -647,7 +651,9 @@ extension PasswordNavigationViewController: PasswordAlertPresenter {
             do {
                 try PasswordStore.shared.acceptTrustIssues()
             } catch {
-                guard let self else { return }
+                guard let self else {
+                    return
+                }
                 Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
             }
         })

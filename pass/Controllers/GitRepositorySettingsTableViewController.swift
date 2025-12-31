@@ -295,19 +295,23 @@ class GitRepositorySettingsTableViewController: UITableViewController, PasswordA
         )
 
         alert.addAction(UIAlertAction(title: "Accept".localize(), style: .default) { [weak self] _ in
-            guard let self else { return }
+            guard let self else {
+                return
+            }
             do {
-                try self.passwordStore.initializeTrust()
+                try passwordStore.initializeTrust()
             } catch {
                 Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
             }
-            self.performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
         })
 
         alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel) { [weak self] _ in
             // User declined trust - still let them proceed but warn them
-            guard let self else { return }
-            self.performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+            guard let self else {
+                return
+            }
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
         })
 
         present(alert, animated: true)

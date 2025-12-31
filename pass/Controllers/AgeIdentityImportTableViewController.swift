@@ -119,8 +119,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
 
     @objc
     private func save(_: Any) {
-        guard let identityString = identityTextView?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-              identityString.hasPrefix("AGE-SECRET-KEY-") else {
+        guard let identityString = extractSecretKey() else {
             showError("InvalidAgeIdentity".localize())
             return
         }
@@ -133,7 +132,7 @@ class AgeIdentityImportTableViewController: UITableViewController {
             return
         }
 
-        // Store in keychain
+        // Store in keychain (just the key, not comments)
         keychain.add(string: identityString, for: CryptoAgent.ageIdentityKeychainKey)
 
         // Show success and pop
@@ -159,8 +158,22 @@ class AgeIdentityImportTableViewController: UITableViewController {
     }
 
     private func updateSaveButton() {
-        let text = identityTextView?.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        saveBarButtonItem?.isEnabled = text.hasPrefix("AGE-SECRET-KEY-")
+        saveBarButtonItem?.isEnabled = extractSecretKey() != nil
+    }
+
+    /// Extract the AGE-SECRET-KEY line from text that may include comments
+    private func extractSecretKey() -> String? {
+        guard let text = identityTextView?.text else {
+            return nil
+        }
+        // Find the line containing the secret key (handles age-keygen output with comments)
+        for line in text.components(separatedBy: .newlines) {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed.hasPrefix("AGE-SECRET-KEY-") {
+                return trimmed
+            }
+        }
+        return nil
     }
 
     private func showError(_ message: String) {
