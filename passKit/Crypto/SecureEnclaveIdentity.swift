@@ -9,7 +9,8 @@ import Foundation
 /// P-256 identity stored in the iOS Secure Enclave, exportable as age1tag recipient
 @available(iOS 16.0, *)
 public class SecureEnclaveIdentity {
-    private let privateKey: SecureEnclave.P256.KeyAgreement.PrivateKey
+    /// The SE private key - internal for HPKE operations
+    let privateKey: SecureEnclave.P256.KeyAgreement.PrivateKey
     private let tag: String
 
     public var publicKey: P256.KeyAgreement.PublicKey {

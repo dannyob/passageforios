@@ -171,13 +171,21 @@ public class CryptoAgent {
         requestPassphrase _: @escaping (String) -> String
     ) throws -> Data {
         // Try to initialize if not already done
-        if #available(iOS 16.0, *) {
+        if #available(iOS 17.0, *) {
             if ageInterface == nil, secureEnclaveIdentity == nil {
                 try initKeys()
             }
-            // Try Secure Enclave identity first
+            // Try Secure Enclave identity first (requires iOS 17 for p256tag)
             if let seIdentity = secureEnclaveIdentity {
                 return try decryptWithSecureEnclave(encryptedData: encryptedData, identity: seIdentity)
+            }
+        } else if #available(iOS 16.0, *) {
+            if ageInterface == nil, secureEnclaveIdentity == nil {
+                try initKeys()
+            }
+            // SE identity exists but p256tag requires iOS 17
+            if secureEnclaveIdentity != nil {
+                throw CryptoError.decryptionFailed("Secure Enclave p256tag requires iOS 17+")
             }
         } else {
             if ageInterface == nil {
@@ -194,20 +202,22 @@ public class CryptoAgent {
         return try age.decrypt(encryptedData: encryptedData, passphrase: "")
     }
 
-    /// Decrypt using Secure Enclave identity
-    @available(iOS 16.0, *)
+    /// Decrypt using Secure Enclave identity with p256tag
+    @available(iOS 17.0, *)
     private func decryptWithSecureEnclave(
-        encryptedData _: Data,
-        identity _: SecureEnclaveIdentity
+        encryptedData: Data,
+        identity: SecureEnclaveIdentity
     ) throws -> Data {
-        // Parse age file header to extract ephemeral key from stanza
-        // Perform ECDH with Secure Enclave, derive file key, decrypt payload
-        // This requires parsing the age format - full implementation depends on
-        // whether we use Go age library or implement in Swift
+        try AgeP256TagCrypto.decrypt(ageData: encryptedData, identity: identity)
+    }
 
-        // For now, this is a placeholder - actual implementation needs age format parsing
-        // The age plugin protocol would handle this via age-plugin-se
-        throw CryptoError.decryptionFailed("Secure Enclave decryption not yet implemented")
+    /// Encrypt using Secure Enclave identity with p256tag
+    @available(iOS 17.0, *)
+    private func encryptWithSecureEnclave(
+        plainData: Data,
+        identity: SecureEnclaveIdentity
+    ) throws -> Data {
+        try AgeP256TagCrypto.encrypt(plaintext: plainData, recipients: [identity.publicKey])
     }
 
     // MARK: - Encryption
@@ -244,13 +254,30 @@ public class CryptoAgent {
         return try pgp.encrypt(plainData: plainData)
     }
 
-    /// Encrypt with age (uses AgeInterface)
+    /// Encrypt with age (uses AgeInterface or SecureEnclaveIdentity)
     private func encryptWithAge(plainData: Data) throws -> Data {
-        // Try to initialize if not already done
-        if ageInterface == nil {
-            try initKeys()
+        // Try Secure Enclave first (iOS 17+)
+        if #available(iOS 17.0, *) {
+            if ageInterface == nil, secureEnclaveIdentity == nil {
+                try initKeys()
+            }
+            if let seIdentity = secureEnclaveIdentity {
+                return try encryptWithSecureEnclave(plainData: plainData, identity: seIdentity)
+            }
+        } else if #available(iOS 16.0, *) {
+            if ageInterface == nil, secureEnclaveIdentity == nil {
+                try initKeys()
+            }
+            if secureEnclaveIdentity != nil {
+                throw CryptoError.encryptionFailed("Secure Enclave p256tag requires iOS 17+")
+            }
+        } else {
+            if ageInterface == nil {
+                try initKeys()
+            }
         }
 
+        // Fall back to software identity
         guard let age = ageInterface else {
             throw CryptoError.encryptionFailed("Age not initialized")
         }
