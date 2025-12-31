@@ -58,6 +58,11 @@ public class PasswordStore {
         PasswordEntity.totalNumber(in: context)
     }
 
+    /// Whether the store is ready to perform crypto operations (has required keys/identities)
+    public var isPreparedForCrypto: Bool {
+        CryptoAgent(storeURL: storeURL).isPrepared
+    }
+
     public var sizeOfRepositoryByteCount: UInt64 {
         (try? fileManager.allocatedSizeOfDirectoryAtURL(directoryURL: storeURL)) ?? 0
     }
@@ -503,4 +508,136 @@ func findAgeRecipients(from url: URL) -> String {
     path = path.appendingPathComponent(".age-recipients")
 
     return (try? String(contentsOf: path))?.trimmed ?? ""
+}
+
+// MARK: - Trust Verification
+
+public extension PasswordStore {
+    /// Result of trust verification after pull
+    enum TrustVerificationResult {
+        /// Verification passed (or not applicable for non-passage stores)
+        case verified
+        /// Trust not yet initialized - UI should prompt for TOFU
+        case trustNotInitialized
+        /// Verification found issues - UI should display them
+        case issues([TrustVerificationIssue])
+    }
+
+    /// Verify trust state after a pull operation.
+    ///
+    /// For passage stores, this verifies that any commits modifying `.age-recipients`
+    /// since the last verified state are properly signed by authorized recipients.
+    ///
+    /// - Returns: The verification result
+    /// - Throws: AppError if repository access fails
+    func verifyAfterPull() throws -> TrustVerificationResult {
+        // Only applicable for passage stores
+        let cryptoAgent = CryptoAgent(storeURL: storeURL)
+        guard cryptoAgent.storeType == .passage else {
+            return .verified
+        }
+
+        guard let gitRepository else {
+            throw AppError.repositoryNotSet
+        }
+
+        let trustManager = TrustManager(storeURL: storeURL)
+
+        // Check if trust has been initialized
+        guard let trustState = trustManager.loadTrustState(), trustState.initialized else {
+            return .trustNotInitialized
+        }
+
+        // Verify commits since last verified
+        let issues = try trustManager.verifyCommitsSince(
+            lastVerifiedSHA: trustState.lastVerifiedCommitSHA,
+            repository: gitRepository.repository
+        )
+
+        if issues.isEmpty {
+            // All verified - update trust state to current HEAD
+            try updateTrustStateToHead(trustManager: trustManager, gitRepository: gitRepository)
+            return .verified
+        }
+
+        return .issues(issues)
+    }
+
+    /// Initialize trust on first use (TOFU).
+    ///
+    /// Called when the user accepts the current `.age-recipients` as trusted.
+    /// This establishes the initial trust anchor.
+    ///
+    /// - Throws: TrustManagerError if initialization fails
+    func initializeTrust() throws {
+        guard let gitRepository else {
+            throw AppError.repositoryNotSet
+        }
+
+        let trustManager = TrustManager(storeURL: storeURL)
+        _ = try trustManager.initializeTrustFromCurrentState(repository: gitRepository.repository)
+    }
+
+    /// Accept trust verification issues and update trust state.
+    ///
+    /// Called when the user manually reviews and accepts changes to `.age-recipients`
+    /// that failed verification. This updates the trust state to the current HEAD.
+    ///
+    /// - Throws: TrustManagerError or AppError if update fails
+    func acceptTrustIssues() throws {
+        guard let gitRepository else {
+            throw AppError.repositoryNotSet
+        }
+
+        let trustManager = TrustManager(storeURL: storeURL)
+        try updateTrustStateToHead(trustManager: trustManager, gitRepository: gitRepository)
+    }
+
+    /// Update trust state to the current HEAD commit.
+    ///
+    /// - Parameters:
+    ///   - trustManager: The TrustManager instance
+    ///   - gitRepository: The GitRepository instance
+    /// - Throws: TrustManagerError if update fails
+    private func updateTrustStateToHead(trustManager: TrustManager, gitRepository: GitRepository) throws {
+        // Get current HEAD commit
+        guard let headCommit = try? gitRepository.getRecentCommits(count: 1).first else {
+            throw TrustManagerError.repositoryError("Could not get HEAD commit")
+        }
+
+        // Get the SHA (it may be optional on GTCommit, use fallback)
+        let headSHA = headCommit.sha ?? ""
+        guard !headSHA.isEmpty else {
+            throw TrustManagerError.repositoryError("HEAD commit has no SHA")
+        }
+
+        // Read current recipients
+        let recipientsURL = storeURL.appendingPathComponent(".age-recipients")
+        let recipientsContent = (try? String(contentsOf: recipientsURL, encoding: .utf8)) ?? ""
+        let currentRecipients = recipientsContent
+            .components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+
+        try trustManager.updateTrustState(
+            newCommitSHA: headSHA,
+            newRecipients: currentRecipients
+        )
+    }
+
+    /// Check if trust verification is needed for this store.
+    ///
+    /// - Returns: true if this is a passage store
+    var requiresTrustVerification: Bool {
+        let cryptoAgent = CryptoAgent(storeURL: storeURL)
+        return cryptoAgent.storeType == .passage
+    }
+
+    /// Check if trust has been initialized for this store.
+    ///
+    /// - Returns: true if trust state exists and is initialized
+    var isTrustInitialized: Bool {
+        let trustManager = TrustManager(storeURL: storeURL)
+        return trustManager.isTrustInitialized
+    }
 }

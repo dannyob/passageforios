@@ -15,7 +15,7 @@ public typealias PullOptions = [AnyHashable: Any]
 public typealias PushOptions = [String: Any]
 
 public class GitRepository {
-    let repository: GTRepository
+    public let repository: GTRepository
     var branchName: String = "master"
 
     public init(with localDir: URL) throws {
