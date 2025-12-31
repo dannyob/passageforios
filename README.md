@@ -1,54 +1,43 @@
 <img src="icon/icon_round.png" width="76"/>
 
-# Pass
-[![GitHub release](https://img.shields.io/github/release/mssun/passforios.svg)](https://github.com/mssun/passforios/releases)
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/passforios/passforios)
-[![Build Status](https://github.com/mssun/passforios/workflows/Deploying/badge.svg)](https://github.com/mssun/passforios/actions)
-[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/mssun)
+[![GitHub release](https://img.shields.io/github/release/dannyob/passageforios.svg)](https://github.com/dannyob/passageforios/releases)
+[![Build Status](https://github.com/dannyob/passageforios/workflows/Deploying/badge.svg)](https://github.com/dannyob/passageforios/actions)
 
-Pass is an iOS client compatible with [ZX2C4's Pass command line application](http://www.passwordstore.org/).
-It is a password manager using GPG for encryption and Git for version control.
+# Passage for iOS
 
-Pass for iOS is available in App Store with the name "Pass - Password Store", and both iPhone and iPad are supported.
+[Passage](https://github.com/FiloSottile/passage) is a fork of the command line program Password Store. Password store uses PGP to encrypt; Passage uses the modern [age](https://age-encryption.org/) utility and is written by age's author, [Filippo Valsorda](https://filippo.io).
 
-<p>
-<a href="https://itunes.apple.com/us/app/pass-password-store/id1205820573?mt=8"><img alt="Download on the App Store" src="img/app_store_badge.svg" width="150"/></a>
-</p>
+Similarly, [Passage for iOS](https://github.com/dannyob/passageforios) is a friendly fork of [Pass for iOS](https://github.com/mssun/passforios), an iOS frontend to Password Store written by [Mingshen Sun](https://mssun.me/). It can read and write either PGP or age-encrypted password stores.
 
-You can also help us test beta versions through [TestFlight](https://testflight.apple.com/join/whK4zUFG).
+# Passage for iOS's parent: Pass
+
+The vast majority of Passage for iOS's code comes from
+[Pass](https://github.com/mssun/passforios). My hope is that the changes here
+can be upstreamed to Pass for iOS at some point. 
+
+It was mostly vibe-coded by Claude, however, so some caution is advised! Pass for iOS is available on the iPhone App store. Passage for iOS you must build yourself for now.
+
+You can and should donate to support the original Pass here:
+[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/mssun).
 
 ## Features
 
-- Compatible with the Password Store command line tool.
+- Compatible with the Password Store *and* Passage command line tools.
 - View, copy, add, and edit password entries.
-- Encrypt and decrypt password entries by PGP keys.
+- Encrypt and decrypt password entries by PGP keys or by a age identities.
 - Synchronize with your password Git repository.
 - User-friendly interface: search, long press to copy, copy and open link, etc.
 - Support one-time password tokens (two-factor authentication codes).
 - AutoFill in Safari/Chrome and [supported apps](https://github.com/agilebits/onepassword-app-extension).
-- Support YubiKey.
+- [PGP only] Supports YubiKey.
+- [Age-only] Supports re-encrypting to multiple recipients via an .age-recipients
+  file in the root directory. Commits modifying .age-recipients must be SSH-signed
+  by someone already in the previous .age-recipients list.
 
-## Screenshots
-
-<p>
-<img src="img/screenshot1.png" width="200"/>
-<img src="img/screenshot2.png" width="200"/>
-<img src="img/screenshot3.png" width="200"/>
-<img src="img/screenshot4.png" width="200"/>
-</p>
-
-## Usages
-
-- Setup your password-store ([official `Pass` introduction](https://www.passwordstore.org/))
-- Get Pass for iOS from the App Store or [build by yourself](https://github.com/mssun/passforios/wiki/Building-Pass-for-iOS)
-- Setup Pass for iOS ([quick-start guide](https://github.com/mssun/passforios/wiki#quick-start-guide-for-pass-for-ios))
-
-For more, please read the [wiki page](https://github.com/mssun/passforios/wiki).
-
-## Building Pass for iOS
+## Building Passage for iOS
 
 1. Install Go: `brew install go`.
-1. Run `./scripts/gopenpgp_build.sh` to build GopenPGP.
+1. Run `./scripts/crypto_build.sh` to build the Crypto framework (includes PGP, age, and signature verification).
 1. Open the `pass.xcodeproj` file in Xcode.
 1. Build & Run.
 

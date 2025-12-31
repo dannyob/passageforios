@@ -356,7 +356,8 @@ class PasswordEditorTableViewController: UITableViewController {
             return ("", "")
         }
         let name = url.lastPathComponent
-        let path = url.appendingPathExtension("gpg").path
+        let storeType = PasswordStoreType.detect(at: PasswordStore.shared.storeURL)
+        let path = url.appendingPathExtension(storeType.fileExtension).path
         return (name, path)
     }
 
