@@ -6,11 +6,9 @@
 //  Uses ObjectiveGit for commit access and libgit2 for signature extraction.
 //
 
+import Crypto
 import Foundation
 import ObjectiveGit
-
-// TODO: Import gomobile bindings once the sshage mobile package is built into Crypto.xcframework
-// import Crypto  // for MobileVerificationResult, MobileVerifyRecipientsChange, etc.
 
 /// Errors that can occur during signature verification
 public enum CommitSignatureError: Error, Equatable {
@@ -65,7 +63,6 @@ public struct CommitVerificationResult {
 /// 2. Convert the signer's SSH ed25519 public key to an age recipient
 /// 3. Check if the age recipient is in the authorized recipients list
 public class CommitSignatureVerifier {
-
     // MARK: - Signature Extraction
 
     /// Extracts the SSH signature from a git commit.
@@ -160,29 +157,18 @@ public class CommitSignatureVerifier {
             return CommitVerificationResult(isSigned: false)
         }
 
-        // TODO: Call gomobile bindings once available
-        // Once the sshage mobile package is built into Crypto.xcframework:
-        //
-        // let result = MobileVerifyRecipientsChange(
-        //     extractedSigData.signature,
-        //     extractedSigData.signedData,
-        //     authorizedRecipients,
-        //     verifyCryptographicSignature
-        // )
-        //
-        // return CommitVerificationResult(
-        //     signerAgeKey: result?.signerAgeKey ?? "",
-        //     isAuthorized: result?.authorized ?? false,
-        //     errorMessage: result?.errorMessage ?? "",
-        //     isSigned: true
-        // )
+        // Call the gomobile bindings to verify the signature
+        let result = MobileVerifyRecipientsChange(
+            extractedSigData.signature,
+            extractedSigData.signedData,
+            authorizedRecipients,
+            verifyCryptographicSignature
+        )
 
-        // Placeholder until gomobile bindings are built
-        _ = extractedSigData // Suppress unused variable warning until bindings are ready
         return CommitVerificationResult(
-            signerAgeKey: "",
-            isAuthorized: false,
-            errorMessage: "Gomobile bindings not yet available - signature verification pending",
+            signerAgeKey: result?.signerAgeKey ?? "",
+            isAuthorized: result?.authorized ?? false,
+            errorMessage: result?.errorMessage ?? "",
             isSigned: true
         )
     }
@@ -218,29 +204,18 @@ public class CommitSignatureVerifier {
             return CommitVerificationResult(isSigned: false)
         }
 
-        // TODO: Call gomobile bindings once available
-        // Once the sshage mobile package is built into Crypto.xcframework:
-        //
-        // let result = MobileIsBootstrapValid(
-        //     extractedSigData.signature,
-        //     extractedSigData.signedData,
-        //     newRecipients,
-        //     verifyCryptographicSignature
-        // )
-        //
-        // return CommitVerificationResult(
-        //     signerAgeKey: result?.signerAgeKey ?? "",
-        //     isAuthorized: result?.authorized ?? false,
-        //     errorMessage: result?.errorMessage ?? "",
-        //     isSigned: true
-        // )
+        // Call the gomobile bindings to verify the bootstrap commit
+        let result = MobileIsBootstrapValid(
+            extractedSigData.signature,
+            extractedSigData.signedData,
+            newRecipients,
+            verifyCryptographicSignature
+        )
 
-        // Placeholder until gomobile bindings are built
-        _ = extractedSigData // Suppress unused variable warning until bindings are ready
         return CommitVerificationResult(
-            signerAgeKey: "",
-            isAuthorized: false,
-            errorMessage: "Gomobile bindings not yet available - bootstrap verification pending",
+            signerAgeKey: result?.signerAgeKey ?? "",
+            isAuthorized: result?.authorized ?? false,
+            errorMessage: result?.errorMessage ?? "",
             isSigned: true
         )
     }

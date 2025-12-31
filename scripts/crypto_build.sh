@@ -50,6 +50,21 @@ pushd "$GOPENPGP_PATH"
 # Add age dependency
 go get filippo.io/age@$AGE_VERSION
 
+# Copy sshage module for trust verification
+SSHAGE_SRC="$(dirs -l +1)/scripts/gopenpgp-additions"
+if [[ -d "$SSHAGE_SRC" ]]; then
+  echo "Copying sshage module from $SSHAGE_SRC"
+  cp -r "$SSHAGE_SRC" "./sshage-module"
+  # Remove nested go.mod from mobile package (it becomes a subpackage)
+  rm -f ./sshage-module/sshage/mobile/go.mod ./sshage-module/sshage/mobile/go.sum
+
+  # Add replace directive for sshage
+  cat >> go.mod <<'GOMOD'
+
+replace github.com/mssun/passforios/sshage => ./sshage-module
+GOMOD
+fi
+
 # Create agewrap package with gomobile-compatible wrappers
 mkdir -p agewrap
 cat > agewrap/agewrap.go << 'GOEOF'
@@ -101,17 +116,47 @@ go build golang.org/x/mobile/cmd/gobind
 
 ./gomobile init
 
-# Build combined framework with both Gopenpgp and Age
-./gomobile bind -tags mobile -target ios -iosversion 13.0 -v -x -ldflags="-s -w" -o dist/Crypto.xcframework \
-  github.com/ProtonMail/gopenpgp/v2/crypto \
-  github.com/ProtonMail/gopenpgp/v2/armor \
-  github.com/ProtonMail/gopenpgp/v2/constants \
-  github.com/ProtonMail/gopenpgp/v2/models \
-  github.com/ProtonMail/gopenpgp/v2/subtle \
-  github.com/ProtonMail/gopenpgp/v2/helper \
-  filippo.io/age \
-  filippo.io/age/armor \
+# Add sshage dependencies if module exists
+if [[ -d "./sshage-module" ]]; then
+  go get github.com/mssun/passforios/sshage
+  go get github.com/mssun/passforios/sshage/sshage
+  # Ensure sshage is in require (go mod tidy might remove it if nothing imports it yet)
+  if ! grep -q "^require github.com/mssun/passforios/sshage" go.mod; then
+    echo 'require github.com/mssun/passforios/sshage v0.0.0' >> go.mod
+  fi
+fi
+
+go mod tidy
+# Re-add dependencies that go mod tidy might have removed
+if [[ -d "./sshage-module" ]]; then
+  if ! grep -q "^require github.com/mssun/passforios/sshage" go.mod; then
+    echo 'require github.com/mssun/passforios/sshage v0.0.0' >> go.mod
+  fi
+fi
+# golang.org/x/mobile must be in go.mod for gomobile bind to work
+go get golang.org/x/mobile
+go mod download all
+
+# Build combined framework with Gopenpgp, Age, and sshage
+PACKAGES=(
+  github.com/ProtonMail/gopenpgp/v2/crypto
+  github.com/ProtonMail/gopenpgp/v2/armor
+  github.com/ProtonMail/gopenpgp/v2/constants
+  github.com/ProtonMail/gopenpgp/v2/models
+  github.com/ProtonMail/gopenpgp/v2/subtle
+  github.com/ProtonMail/gopenpgp/v2/helper
+  filippo.io/age
+  filippo.io/age/armor
   github.com/ProtonMail/gopenpgp/v2/agewrap
+)
+
+# Add sshage/mobile if available
+if [[ -d "./sshage-module" ]]; then
+  PACKAGES+=(github.com/mssun/passforios/sshage/sshage/mobile)
+fi
+
+./gomobile bind -tags mobile -target ios -iosversion 13.0 -v -x -ldflags="-s -w" -o dist/Crypto.xcframework \
+  "${PACKAGES[@]}"
 
 popd
 
