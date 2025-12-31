@@ -7,6 +7,7 @@
 //
 
 import CoreData
+import CryptoKit
 import passKit
 import SVProgressHUD
 import UIKit
@@ -16,6 +17,8 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
     @IBOutlet var pgpKeyTableViewCell: UITableViewCell!
     @IBOutlet var passcodeTableViewCell: UITableViewCell!
     @IBOutlet var passwordRepositoryTableViewCell: UITableViewCell!
+    @IBOutlet var secureEnclaveTableViewCell: UITableViewCell!
+    @IBOutlet var ageIdentityTableViewCell: UITableViewCell!
     var setPasscodeLockAlert: UIAlertController?
 
     let keychain = AppKeychain.shared
@@ -70,12 +73,16 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         passwordRepositoryTableViewCell.detailTextLabel?.text = Defaults.gitURL.host
         setPGPKeyTableViewCellDetailText()
         setPasscodeLockCell()
+        setSecureEnclaveCellDetailText()
+        setAgeIdentityCellDetailText()
     }
 
     override func viewWillAppear(_: Bool) {
         super.viewWillAppear(true)
         tabBarController!.delegate = self
         setPasswordRepositoryTableViewCellDetailText()
+        setSecureEnclaveCellDetailText()
+        setAgeIdentityCellDetailText()
     }
 
     private func setPasscodeLockCell() {
@@ -83,6 +90,37 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             passcodeTableViewCell.detailTextLabel?.text = "On".localize()
         } else {
             passcodeTableViewCell.detailTextLabel?.text = "Off".localize()
+        }
+    }
+
+    private func setSecureEnclaveCellDetailText() {
+        if !SecureEnclave.isAvailable {
+            secureEnclaveTableViewCell.detailTextLabel?.text = "N/A"
+            secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+            return
+        }
+
+        if #available(iOS 16.0, *) {
+            if (try? SecureEnclaveIdentity.load(tag: "passforios.age.identity")) != nil {
+                secureEnclaveTableViewCell.detailTextLabel?.text = "On".localize()
+                secureEnclaveTableViewCell.detailTextLabel?.textColor = .systemGreen
+            } else {
+                secureEnclaveTableViewCell.detailTextLabel?.text = "NotSet".localize()
+                secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+            }
+        } else {
+            secureEnclaveTableViewCell.detailTextLabel?.text = "N/A"
+            secureEnclaveTableViewCell.detailTextLabel?.textColor = .secondaryLabel
+        }
+    }
+
+    private func setAgeIdentityCellDetailText() {
+        if AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) as String? != nil {
+            ageIdentityTableViewCell.detailTextLabel?.text = "Configured".localize()
+            ageIdentityTableViewCell.detailTextLabel?.textColor = .systemGreen
+        } else {
+            ageIdentityTableViewCell.detailTextLabel?.text = "NotSet".localize()
+            ageIdentityTableViewCell.detailTextLabel?.textColor = .secondaryLabel
         }
     }
 
@@ -114,9 +152,13 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
 
     @objc
     func actOnPasswordStoreErasedNotification() {
-        setPGPKeyTableViewCellDetailText()
-        setPasswordRepositoryTableViewCellDetailText()
-        setPasscodeLockCell()
+        DispatchQueue.main.async {
+            self.setPGPKeyTableViewCellDetailText()
+            self.setPasswordRepositoryTableViewCellDetailText()
+            self.setPasscodeLockCell()
+            self.setSecureEnclaveCellDetailText()
+            self.setAgeIdentityCellDetailText()
+        }
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -139,8 +181,72 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
             }
         } else if cell == pgpKeyTableViewCell {
             showPGPKeyActionSheet()
+        } else if cell == secureEnclaveTableViewCell {
+            showSecureEnclaveSetup()
+        } else if cell == ageIdentityTableViewCell {
+            showAgeIdentityActionSheet()
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    private func showSecureEnclaveSetup() {
+        if #available(iOS 16.0, *) {
+            pushSecureEnclaveSetupViewController()
+        } else {
+            let alert = UIAlertController(
+                title: "Secure Enclave",
+                message: "Secure Enclave identity requires iOS 16 or later.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK".localize(), style: .default))
+            present(alert, animated: true)
+        }
+    }
+
+    @available(iOS 16.0, *)
+    private func pushSecureEnclaveSetupViewController() {
+        let setupVC = SecureEnclaveSetupViewController(style: .insetGrouped)
+        navigationController?.pushViewController(setupVC, animated: true)
+    }
+
+    private func showAgeIdentityActionSheet() {
+        let hasIdentity: Bool = AppKeychain.shared.get(for: CryptoAgent.ageIdentityKeychainKey) != nil
+
+        let alert = UIAlertController(title: "AgeIdentity".localize(), message: nil, preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "ImportAgeIdentity".localize(), style: .default) { [weak self] _ in
+            let importController = AgeIdentityImportTableViewController(style: .insetGrouped)
+            self?.navigationController?.pushViewController(importController, animated: true)
+        })
+
+        if hasIdentity {
+            alert.addAction(UIAlertAction(title: "DeleteAgeIdentity".localize(), style: .destructive) { [weak self] _ in
+                self?.deleteAgeIdentity()
+            })
+        }
+
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = ageIdentityTableViewCell
+            popover.sourceRect = ageIdentityTableViewCell.bounds
+        }
+
+        present(alert, animated: true)
+    }
+
+    private func deleteAgeIdentity() {
+        let alert = UIAlertController(
+            title: "DeleteAgeIdentity".localize(),
+            message: "DeleteAgeIdentityWarning".localize(),
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete".localize(), style: .destructive) { [weak self] _ in
+            AppKeychain.shared.removeContent(for: CryptoAgent.ageIdentityKeychainKey)
+            self?.setAgeIdentityCellDetailText()
+        })
+        present(alert, animated: true)
     }
 
     override func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {

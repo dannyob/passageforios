@@ -8,7 +8,7 @@
 
 import XCTest
 
-@testable import Gopenpgp
+@testable import Crypto
 
 // swiftformat:disable:next sortedImports
 @testable import passKit

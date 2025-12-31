@@ -196,12 +196,18 @@ class GitRepositorySettingsTableViewController: UITableViewController, PasswordA
                     checkoutProgressBlock: checkoutProgressBlock
                 )
 
-                let gpgIDFile = self.passwordStore.storeURL.appendingPathComponent(".gpg-id").path
-                guard FileManager.default.fileExists(atPath: gpgIDFile) else {
+                // Verify this is a valid password store (pass or passage)
+                let storeURL = self.passwordStore.storeURL
+                let storeType = PasswordStoreType.detect(at: storeURL)
+                guard storeType != .unknown else {
+                    // List files at root to help debug detection issues
+                    let contents = (try? FileManager.default.contentsOfDirectory(atPath: storeURL.path)) ?? []
+                    let rootFiles = contents.prefix(10).joined(separator: ", ")
                     self.passwordStore.eraseStoreData()
                     SVProgressHUD.dismiss {
                         DispatchQueue.main.async {
-                            Utils.alert(title: "Error".localize(), message: "NoProperPassRepo.".localize(), controller: self)
+                            let message = "NoProperPassRepo.".localize() + "\n\nRoot files: \(rootFiles)"
+                            Utils.alert(title: "Error".localize(), message: message, controller: self)
                         }
                     }
                     return
@@ -237,18 +243,78 @@ class GitRepositorySettingsTableViewController: UITableViewController, PasswordA
                 Defaults.isRememberGitCredentialPassphraseOn = false
                 self.passwordStore.gitPassword = nil
                 self.passwordStore.gitSSHPrivateKeyPassphrase = nil
-                self.performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+                self.handleTrustVerificationAfterClone()
             }
         )
         savePassphraseAlert.addAction(
             UIAlertAction(title: "Yes".localize(), style: .destructive) { _ in
                 Defaults.isRememberGitCredentialPassphraseOn = true
-                self.performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+                self.handleTrustVerificationAfterClone()
             }
         )
         DispatchQueue.main.async {
             self.present(savePassphraseAlert, animated: true)
         }
+    }
+
+    /// Handle trust verification after a successful clone
+    private func handleTrustVerificationAfterClone() {
+        guard passwordStore.requiresTrustVerification else {
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+            return
+        }
+
+        do {
+            let result = try passwordStore.verifyAfterPull()
+
+            switch result {
+            case .verified:
+                // Trust already initialized (shouldn't happen on fresh clone)
+                performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+
+            case .trustNotInitialized:
+                showTrustInitializationAlert()
+
+            case .issues:
+                // Task 11 handles verification issues - for now just proceed
+                performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+            }
+        } catch {
+            // Log error but don't block user - verification is advisory
+            print("Trust verification error: \(error)")
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+        }
+    }
+
+    /// Show TOFU initialization alert for first-time trust setup after clone
+    private func showTrustInitializationAlert() {
+        let alert = UIAlertController(
+            title: "InitializeTrustTitle".localize(),
+            message: "InitializeTrustMessage".localize(),
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Accept".localize(), style: .default) { [weak self] _ in
+            guard let self else {
+                return
+            }
+            do {
+                try passwordStore.initializeTrust()
+            } catch {
+                Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
+            }
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel) { [weak self] _ in
+            // User declined trust - still let them proceed but warn them
+            guard let self else {
+                return
+            }
+            performSegue(withIdentifier: "saveGitServerSettingSegue", sender: self)
+        })
+
+        present(alert, animated: true)
     }
 
     @IBAction

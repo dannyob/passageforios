@@ -131,6 +131,10 @@
 "CameraAccessDenied."                       = "Camera access denied.";
 "WarningToggleCameraPermissionsResetsApp."  = "WARNING: Toggle the camera permission resets the app! Save your changes.";
 
+// Crypto (PGP/Age)
+"CryptoKeyNotSet."                  = "No encryption key configured. Please set up your PGP key or age identity first.";
+"MakeSureCryptoAndGitProperlySet."  = "Please make sure your encryption key (PGP or age) and Git server are properly set.";
+
 // PGP
 "Decrypting"                        = "Decrypting";
 "PgpKeyNotSet."                     = "PGP Key is not set. Please set your PGP Key first.";
@@ -350,3 +354,50 @@ to get the public and the encryption private subkeys in this specific format. Ch
   $ gpg --show-key subkey
 
 Finally, copy them to a location accessible by the Files app.";
+
+// Secure Enclave
+"SecureEnclave"                     = "Secure Enclave";
+"Status"                            = "Status";
+"RecipientForAgeRecipients"         = "Your Recipient (for .age-recipients)";
+"IdentityConfigured"                = "Identity configured";
+"NoIdentity"                        = "No identity";
+"SecureEnclaveNotAvailable"         = "Secure Enclave not available";
+"GenerateIdentity"                  = "Generate Identity";
+"RegenerateIdentity"                = "Regenerate Identity";
+"DeleteIdentity"                    = "Delete Identity";
+"GenerateIdentityMessage"           = "This will create a new Secure Enclave key. Add the recipient to your .age-recipients file to encrypt passwords to this device.";
+"RegenerateIdentityMessage"         = "This will replace your existing identity with a new one. You will no longer be able to decrypt passwords encrypted to the old identity. Add the new recipient to your .age-recipients file.";
+"IdentityGenerated"                 = "Identity Generated";
+"CopyRecipientPrompt"               = "Copy the recipient string to add to your .age-recipients file?";
+"Copy"                              = "Copy";
+"Copied"                            = "Copied";
+"Later"                             = "Later";
+"DeleteIdentityMessage"             = "You will no longer be able to decrypt passwords encrypted to this device.";
+"Generate"                          = "Generate";
+
+// Age identity import
+"ImportAgeIdentity"                 = "Import Age Identity";
+"AgeIdentity"                       = "Age Identity";
+"AgeIdentityImportExplanation."     = "Paste your age identity string starting with AGE-SECRET-KEY-. This is your private key - it will be stored securely in the device keychain.";
+"InvalidAgeIdentity"                = "Invalid age identity format";
+"AgeIdentityImported"               = "Identity Imported";
+"AgeIdentityImportedMessage"        = "Your age identity has been saved. You can now decrypt passwords encrypted to this identity.";
+"Paste"                             = "Paste";
+"Configured"                        = "Configured";
+"DeleteAgeIdentity"                 = "Delete Age Identity";
+"DeleteAgeIdentityWarning"          = "You will no longer be able to decrypt passwords encrypted to this identity.";
+
+// Trust verification
+"InitializeTrustTitle"              = "Initialize Trust";
+"InitializeTrustMessage"            = "This is the first time syncing this password store. The current .age-recipients file will be trusted as the starting point for verification.";
+"Accept"                            = "Accept";
+"VerificationFailed"                = "Signature Verification Failed";
+"VerificationIssuesMessage"         = "Some commits that modified .age-recipients could not be verified:";
+"UnsignedCommitIssue"               = "Commit %@ is not signed";
+"UnauthorizedSignerIssue"           = "Unauthorized signer: %@";
+"SignatureFailedIssue"              = "Signature invalid for commit %@";
+"ExtractionFailedIssue"             = "Could not extract signature from %@";
+"AndMoreIssues"                     = "...and %d more issues";
+"AcceptAnyway"                      = "Accept Anyway";
+"ConfirmAcceptIssues"               = "Are You Sure?";
+"ConfirmAcceptIssuesMessage"        = "Accepting these changes could be dangerous. An unauthorized party may have modified your .age-recipients file, potentially adding their key to access your passwords. Only proceed if you trust the changes.";

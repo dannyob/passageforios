@@ -6,8 +6,8 @@
 //  Copyright © 2017 Bob Sun. All rights reserved.
 //
 
+import Crypto
 import FavIcon
-import Gopenpgp
 import passAutoFillExtension
 import passKit
 import SVProgressHUD
