@@ -131,6 +131,10 @@
 "CameraAccessDenied."                       = "Camera access denied.";
 "WarningToggleCameraPermissionsResetsApp."  = "WARNING: Toggle the camera permission resets the app! Save your changes.";
 
+// Crypto (PGP/Age)
+"CryptoKeyNotSet."                  = "No encryption key configured. Please set up your PGP key or age identity first.";
+"MakeSureCryptoAndGitProperlySet."  = "Please make sure your encryption key (PGP or age) and Git server are properly set.";
+
 // PGP
 "Decrypting"                        = "Decrypting";
 "PgpKeyNotSet."                     = "PGP Key is not set. Please set your PGP Key first.";
@@ -382,3 +386,18 @@ Finally, copy them to a location accessible by the Files app.";
 "Configured"                        = "Configured";
 "DeleteAgeIdentity"                 = "Delete Age Identity";
 "DeleteAgeIdentityWarning"          = "You will no longer be able to decrypt passwords encrypted to this identity.";
+
+// Trust verification
+"InitializeTrustTitle"              = "Initialize Trust";
+"InitializeTrustMessage"            = "This is the first time syncing this password store. The current .age-recipients file will be trusted as the starting point for verification.";
+"Accept"                            = "Accept";
+"VerificationFailed"                = "Signature Verification Failed";
+"VerificationIssuesMessage"         = "Some commits that modified .age-recipients could not be verified:";
+"UnsignedCommitIssue"               = "Commit %@ is not signed";
+"UnauthorizedSignerIssue"           = "Unauthorized signer: %@";
+"SignatureFailedIssue"              = "Signature invalid for commit %@";
+"ExtractionFailedIssue"             = "Could not extract signature from %@";
+"AndMoreIssues"                     = "...and %d more issues";
+"AcceptAnyway"                      = "Accept Anyway";
+"ConfirmAcceptIssues"               = "Are You Sure?";
+"ConfirmAcceptIssuesMessage"        = "Accepting these changes could be dangerous. An unauthorized party may have modified your .age-recipients file, potentially adding their key to access your passwords. Only proceed if you trust the changes.";

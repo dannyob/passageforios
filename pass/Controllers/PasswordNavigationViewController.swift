@@ -347,13 +347,13 @@ extension PasswordNavigationViewController {
 
     override func shouldPerformSegue(withIdentifier identifier: String, sender _: Any?) -> Bool {
         if identifier == "showPasswordDetail" {
-            guard Defaults.isYubiKeyEnabled || PGPAgent.shared.isPrepared else {
-                Utils.alert(title: "CannotShowPassword".localize(), message: "PgpKeyNotSet.".localize(), controller: self)
+            guard Defaults.isYubiKeyEnabled || PasswordStore.shared.isPreparedForCrypto else {
+                Utils.alert(title: "CannotShowPassword".localize(), message: "CryptoKeyNotSet.".localize(), controller: self)
                 return false
             }
         } else if identifier == "addPasswordSegue" {
-            guard PGPAgent.shared.isPrepared, PasswordStore.shared.gitRepository != nil else {
-                Utils.alert(title: "CannotAddPassword".localize(), message: "MakeSurePgpAndGitProperlySet.".localize(), controller: self)
+            guard PasswordStore.shared.isPreparedForCrypto, PasswordStore.shared.gitRepository != nil else {
+                Utils.alert(title: "CannotAddPassword".localize(), message: "MakeSureCryptoAndGitProperlySet.".localize(), controller: self)
                 return false
             }
         }
@@ -527,6 +527,7 @@ extension PasswordNavigationViewController: PasswordAlertPresenter {
                     NotificationCenter.default.post(name: .passwordStoreSyncSucceeded, object: nil)
                     SVProgressHUD.showSuccess(withStatus: "Done".localize())
                     SVProgressHUD.dismiss(withDelay: 1)
+                    self.handleTrustVerification()
                 }
             } catch let error as NSError {
                 gitCredential.delete()
@@ -549,5 +550,110 @@ extension PasswordNavigationViewController: PasswordAlertPresenter {
                 }
             }
         }
+    }
+
+    /// Handle trust verification after a successful pull/sync
+    func handleTrustVerification() {
+        guard PasswordStore.shared.requiresTrustVerification else { return }
+
+        do {
+            let result = try PasswordStore.shared.verifyAfterPull()
+
+            switch result {
+            case .verified:
+                // All good, nothing to show
+                break
+
+            case .trustNotInitialized:
+                showTrustInitializationAlert()
+
+            case let .issues(issues):
+                showVerificationIssuesAlert(issues)
+            }
+        } catch {
+            // Log error but don't block user - verification is advisory
+            print("Trust verification error: \(error)")
+        }
+    }
+
+    /// Show TOFU initialization alert for first-time trust setup
+    func showTrustInitializationAlert() {
+        let alert = UIAlertController(
+            title: "InitializeTrustTitle".localize(),
+            message: "InitializeTrustMessage".localize(),
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Accept".localize(), style: .default) { [weak self] _ in
+            do {
+                try PasswordStore.shared.initializeTrust()
+            } catch {
+                guard let self else { return }
+                Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
+            }
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+
+        present(alert, animated: true)
+    }
+
+    /// Show alert when verification issues are found in .age-recipients commits
+    func showVerificationIssuesAlert(_ issues: [TrustVerificationIssue]) {
+        var message = "VerificationIssuesMessage".localize() + "\n\n"
+
+        for issue in issues.prefix(3) {
+            switch issue.issueType {
+            case .unsignedCommit:
+                message += "- " + String(format: "UnsignedCommitIssue".localize(), String(issue.commitSHA.prefix(8)))
+            case .unauthorizedSigner:
+                message += "- " + String(format: "UnauthorizedSignerIssue".localize(), issue.details ?? "Unknown")
+            case .signatureVerificationFailed:
+                message += "- " + String(format: "SignatureFailedIssue".localize(), String(issue.commitSHA.prefix(8)))
+            case .couldNotExtractSignature:
+                message += "- " + String(format: "ExtractionFailedIssue".localize(), String(issue.commitSHA.prefix(8)))
+            }
+            message += "\n"
+        }
+
+        if issues.count > 3 {
+            message += String(format: "AndMoreIssues".localize(), issues.count - 3)
+        }
+
+        let alert = UIAlertController(
+            title: "VerificationFailed".localize(),
+            message: message,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "AcceptAnyway".localize(), style: .destructive) { [weak self] _ in
+            self?.confirmAcceptTrustIssues()
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+
+        present(alert, animated: true)
+    }
+
+    /// Show additional confirmation before accepting trust issues (dangerous action)
+    private func confirmAcceptTrustIssues() {
+        let confirmAlert = UIAlertController(
+            title: "ConfirmAcceptIssues".localize(),
+            message: "ConfirmAcceptIssuesMessage".localize(),
+            preferredStyle: .alert
+        )
+
+        confirmAlert.addAction(UIAlertAction(title: "AcceptAnyway".localize(), style: .destructive) { [weak self] _ in
+            do {
+                try PasswordStore.shared.acceptTrustIssues()
+            } catch {
+                guard let self else { return }
+                Utils.alert(title: "Error".localize(), message: error.localizedDescription, controller: self)
+            }
+        })
+
+        confirmAlert.addAction(UIAlertAction(title: "Cancel".localize(), style: .cancel))
+
+        present(confirmAlert, animated: true)
     }
 }
