@@ -77,10 +77,8 @@ public class CommitSignatureVerifier {
     /// - Returns: SignatureData if commit is signed, nil if unsigned
     /// - Throws: CommitSignatureError if extraction fails
     public static func extractSignature(from commit: GTCommit) throws -> CommitSignatureData? {
-        // Get the repository from the commit
-        guard let repo = commit.repository else {
-            throw CommitSignatureError.repositoryNotAvailable
-        }
+        // Get the repository from the commit (repository is non-optional in ObjectiveGit)
+        let repo = commit.repository
 
         // Get the raw git_commit pointer
         let gitCommit = commit.git_commit()
@@ -157,7 +155,7 @@ public class CommitSignatureVerifier {
             )
         }
 
-        guard let sigData else {
+        guard let extractedSigData = sigData else {
             // Commit is not signed
             return CommitVerificationResult(isSigned: false)
         }
@@ -166,8 +164,8 @@ public class CommitSignatureVerifier {
         // Once the sshage mobile package is built into Crypto.xcframework:
         //
         // let result = MobileVerifyRecipientsChange(
-        //     sigData.signature,
-        //     sigData.signedData,
+        //     extractedSigData.signature,
+        //     extractedSigData.signedData,
         //     authorizedRecipients,
         //     verifyCryptographicSignature
         // )
@@ -180,6 +178,7 @@ public class CommitSignatureVerifier {
         // )
 
         // Placeholder until gomobile bindings are built
+        _ = extractedSigData // Suppress unused variable warning until bindings are ready
         return CommitVerificationResult(
             signerAgeKey: "",
             isAuthorized: false,
@@ -214,7 +213,7 @@ public class CommitSignatureVerifier {
             )
         }
 
-        guard let sigData else {
+        guard let extractedSigData = sigData else {
             // Commit is not signed
             return CommitVerificationResult(isSigned: false)
         }
@@ -223,8 +222,8 @@ public class CommitSignatureVerifier {
         // Once the sshage mobile package is built into Crypto.xcframework:
         //
         // let result = MobileIsBootstrapValid(
-        //     sigData.signature,
-        //     sigData.signedData,
+        //     extractedSigData.signature,
+        //     extractedSigData.signedData,
         //     newRecipients,
         //     verifyCryptographicSignature
         // )
@@ -237,6 +236,7 @@ public class CommitSignatureVerifier {
         // )
 
         // Placeholder until gomobile bindings are built
+        _ = extractedSigData // Suppress unused variable warning until bindings are ready
         return CommitVerificationResult(
             signerAgeKey: "",
             isAuthorized: false,
@@ -262,23 +262,25 @@ public class CommitSignatureVerifier {
         // Get parent tree (nil for root commit)
         let parentTree = commit.parents.first?.tree
 
-        do {
-            let diff = try GTDiff(oldTree: parentTree, newTree: tree, in: repository, options: nil)
-            var modifiesRecipients = false
-
-            try diff.enumerateDeltas { delta, _ in
-                let oldPath = delta.oldFile?.path ?? ""
-                let newPath = delta.newFile?.path ?? ""
-                if oldPath == ".age-recipients" || newPath == ".age-recipients" {
-                    modifiesRecipients = true
-                }
-            }
-
-            return modifiesRecipients
-        } catch {
+        // Use class method to create diff (GTDiff class method)
+        guard let diff = try? GTDiff(oldTree: parentTree, withNewTree: tree, in: repository, options: nil) else {
             // If we can't get the diff, assume it might modify recipients (safer)
             return true
         }
+
+        var modifiesRecipients = false
+
+        // enumerateDeltasUsingBlock doesn't throw - it's an Objective-C block-based method
+        diff.enumerateDeltas { delta, stop in
+            let oldPath = delta.oldFile?.path ?? ""
+            let newPath = delta.newFile?.path ?? ""
+            if oldPath == ".age-recipients" || newPath == ".age-recipients" {
+                modifiesRecipients = true
+                stop.pointee = true
+            }
+        }
+
+        return modifiesRecipients
     }
 
     /// Gets the .age-recipients content at a specific commit.
@@ -292,20 +294,17 @@ public class CommitSignatureVerifier {
             return nil
         }
 
-        do {
-            let entry = try tree.entry(withPath: ".age-recipients")
-            guard let oid = entry?.oid else {
-                return nil
-            }
-
-            let blob = try GTBlob(oid: oid, in: repository)
-            guard let data = blob.data() else {
-                return nil
-            }
-
-            return String(data: data, encoding: .utf8)
-        } catch {
+        // Use entryWithPath:error: method
+        guard let entry = try? tree.entry(withPath: ".age-recipients"),
+              let oid = entry.oid else {
             return nil
         }
+
+        // Use repository.lookUpObjectByOID to get the blob
+        guard let blob = try? repository.lookUpObject(by: oid, objectType: .blob) as? GTBlob else {
+            return nil
+        }
+
+        return String(data: blob.data(), encoding: .utf8)
     }
 }

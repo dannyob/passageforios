@@ -15,7 +15,6 @@
 		301F6468216165290071A4CE /* ConstantsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301F6467216165290071A4CE /* ConstantsTest.swift */; };
 		301F646D216166AA0071A4CE /* AdditionFieldTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 301F646C216166AA0071A4CE /* AdditionFieldTest.swift */; };
 		302269B323E634B000F843A3 /* PGPKeyFIleImportTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302269B223E634B000F843A3 /* PGPKeyFIleImportTableViewController.swift */; };
-		DC7CBBDA2D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD92D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift */; };
 		302B2C9822C2BDE700D831EE /* AppKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302B2C9722C2BDE700D831EE /* AppKeychain.swift */; };
 		302E85612125ECC70031BA64 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E85602125ECC70031BA64 /* Parser.swift */; };
 		302E85632125EE550031BA64 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E85622125EE550031BA64 /* Constants.swift */; };
@@ -51,7 +50,6 @@
 		30697C4621F63CAB0064FCAC /* GitCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C4121F63CAB0064FCAC /* GitCredential.swift */; };
 		30697C4721F63CAB0064FCAC /* PasscodeLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C4221F63CAB0064FCAC /* PasscodeLock.swift */; };
 		30697C4821F63CAB0064FCAC /* PasswordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C4321F63CAB0064FCAC /* PasswordStore.swift */; };
-		DC7CBBDC2D0FAD07003BB4D2 /* PasswordStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBDB2D0FAD07003BB4D2 /* PasswordStoreType.swift */; };
 		30697C4B21F63D460064FCAC /* ExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C4921F63D460064FCAC /* ExtensionViewController.swift */; };
 		30697C5021F63D7F0064FCAC /* ExtensionConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C4F21F63D7F0064FCAC /* ExtensionConstants.swift */; };
 		30697C5321F63E0B0064FCAC /* PasscodeExtensionDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30697C5121F63E0B0064FCAC /* PasscodeExtensionDisplay.swift */; };
@@ -96,11 +94,6 @@
 		30CCA91623258C380048CA51 /* PGPInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CCA91523258C380048CA51 /* PGPInterface.swift */; };
 		30CCA91823258E760048CA51 /* GopenPGPInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CCA91723258E760048CA51 /* GopenPGPInterface.swift */; };
 		30CCA91A232591320048CA51 /* ObjectivePGPInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CCA919232591320048CA51 /* ObjectivePGPInterface.swift */; };
-		DC7CBBD02D0FAD01003BB4D2 /* AgeInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBCF2D0FAD01003BB4D2 /* AgeInterface.swift */; };
-		DC7CBBD22D0FAD02003BB4D2 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD12D0FAD02003BB4D2 /* Bech32.swift */; };
-		DC7CBBD42D0FAD03003BB4D2 /* CryptoAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD32D0FAD03003BB4D2 /* CryptoAgent.swift */; };
-		DC7CBBD62D0FAD04003BB4D2 /* CryptoInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD52D0FAD04003BB4D2 /* CryptoInterface.swift */; };
-		DC7CBBD82D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */; };
 		30DAFD4A240985A7002456E7 /* Array+Slices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DAFD49240985A7002456E7 /* Array+Slices.swift */; };
 		30DAFD4C240985E3002456E7 /* Array+SlicesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30DAFD4B240985E3002456E7 /* Array+SlicesTest.swift */; };
 		30ED1777276F8842009BA876 /* ObjectiveGit in Frameworks */ = {isa = PBXBuildFile; productRef = 30ED1776276F8842009BA876 /* ObjectiveGit */; };
@@ -120,6 +113,7 @@
 		5F9D7B0D27AF6F7500A8AB22 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5F9D7B0E27AF6FCA00A8AB22 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5F9D7B0F27AF6FD200A8AB22 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		637AA095504CEEC2A25A4555 /* CommitSignatureVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */; };
 		9A1D1CE526E5D1CE0052028E /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1D1CE426E5D1CE0052028E /* OneTimePassword */; };
 		9A1D1CE726E5D2230052028E /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1D1CE626E5D2230052028E /* OneTimePassword */; };
 		9A1F47FA26E5CF4B000C0E01 /* OneTimePassword in Frameworks */ = {isa = PBXBuildFile; productRef = 9A1F47F926E5CF4B000C0E01 /* OneTimePassword */; };
@@ -206,6 +200,13 @@
 		DC6474612D46A8F8004B4BBC /* GitRepositoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC6474602D46A8F2004B4BBC /* GitRepositoryTest.swift */; };
 		DC7CBBBD2D0FA3F2003BB4D2 /* YubiKit in Frameworks */ = {isa = PBXBuildFile; productRef = DC7CBBBC2D0FA3F2003BB4D2 /* YubiKit */; };
 		DC7CBBBF2D0FAC92003BB4D2 /* YKFSmartCardInterfaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBBE2D0FAC8E003BB4D2 /* YKFSmartCardInterfaceExtension.swift */; };
+		DC7CBBD02D0FAD01003BB4D2 /* AgeInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBCF2D0FAD01003BB4D2 /* AgeInterface.swift */; };
+		DC7CBBD22D0FAD02003BB4D2 /* Bech32.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD12D0FAD02003BB4D2 /* Bech32.swift */; };
+		DC7CBBD42D0FAD03003BB4D2 /* CryptoAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD32D0FAD03003BB4D2 /* CryptoAgent.swift */; };
+		DC7CBBD62D0FAD04003BB4D2 /* CryptoInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD52D0FAD04003BB4D2 /* CryptoInterface.swift */; };
+		DC7CBBD82D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */; };
+		DC7CBBDA2D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBD92D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift */; };
+		DC7CBBDC2D0FAD07003BB4D2 /* PasswordStoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC7CBBDB2D0FAD07003BB4D2 /* PasswordStoreType.swift */; };
 		DC8963C01E38EEB900828B09 /* SSHKeyURLImportTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC8963BF1E38EEB900828B09 /* SSHKeyURLImportTableViewController.swift */; };
 		DC917BD71E2E8231000FDF54 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC917BD61E2E8231000FDF54 /* AppDelegate.swift */; };
 		DC917BDC1E2E8231000FDF54 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC917BDA1E2E8231000FDF54 /* Main.storyboard */; };
@@ -342,7 +343,6 @@
 		301F646C216166AA0071A4CE /* AdditionFieldTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionFieldTest.swift; sourceTree = "<group>"; };
 		302202EE222F14E400555236 /* SearchBarScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarScope.swift; sourceTree = "<group>"; };
 		302269B223E634B000F843A3 /* PGPKeyFIleImportTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGPKeyFIleImportTableViewController.swift; sourceTree = "<group>"; };
-		DC7CBBD92D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeIdentityImportTableViewController.swift; sourceTree = "<group>"; };
 		302B2C9722C2BDE700D831EE /* AppKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKeychain.swift; sourceTree = "<group>"; };
 		302E85602125ECC70031BA64 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		302E85622125EE550031BA64 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -375,7 +375,6 @@
 		30697C4121F63CAB0064FCAC /* GitCredential.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitCredential.swift; sourceTree = "<group>"; };
 		30697C4221F63CAB0064FCAC /* PasscodeLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLock.swift; sourceTree = "<group>"; };
 		30697C4321F63CAB0064FCAC /* PasswordStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordStore.swift; sourceTree = "<group>"; };
-		DC7CBBDB2D0FAD07003BB4D2 /* PasswordStoreType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStoreType.swift; sourceTree = "<group>"; };
 		30697C4921F63D460064FCAC /* ExtensionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionViewController.swift; sourceTree = "<group>"; };
 		30697C4F21F63D7F0064FCAC /* ExtensionConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionConstants.swift; sourceTree = "<group>"; };
 		30697C5121F63E0B0064FCAC /* PasscodeExtensionDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeExtensionDisplay.swift; sourceTree = "<group>"; };
@@ -421,11 +420,6 @@
 		30CCA91523258C380048CA51 /* PGPInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PGPInterface.swift; sourceTree = "<group>"; };
 		30CCA91723258E760048CA51 /* GopenPGPInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GopenPGPInterface.swift; sourceTree = "<group>"; };
 		30CCA919232591320048CA51 /* ObjectivePGPInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectivePGPInterface.swift; sourceTree = "<group>"; };
-		DC7CBBCF2D0FAD01003BB4D2 /* AgeInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeInterface.swift; sourceTree = "<group>"; };
-		DC7CBBD12D0FAD02003BB4D2 /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
-		DC7CBBD32D0FAD03003BB4D2 /* CryptoAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAgent.swift; sourceTree = "<group>"; };
-		DC7CBBD52D0FAD04003BB4D2 /* CryptoInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoInterface.swift; sourceTree = "<group>"; };
-		DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveIdentity.swift; sourceTree = "<group>"; };
 		30DAFD49240985A7002456E7 /* Array+Slices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Slices.swift"; sourceTree = "<group>"; };
 		30DAFD4B240985E3002456E7 /* Array+SlicesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SlicesTest.swift"; sourceTree = "<group>"; };
 		30EE3A18241E98C1009FBB61 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = en; path = en.lproj/Intents.intentdefinition; sourceTree = "<group>"; };
@@ -433,6 +427,7 @@
 		30F6C1B327664C7200BE5AB2 /* SVProgressHUD.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SVProgressHUD.xcframework; path = Carthage/Build/SVProgressHUD.xcframework; sourceTree = "<group>"; };
 		30FD2F77214D9E0E005E0A92 /* ParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTest.swift; sourceTree = "<group>"; };
 		5F9D7B0C27AF6F7300A8AB22 /* CryptoTokenKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoTokenKit.framework; path = System/Library/Frameworks/CryptoTokenKit.framework; sourceTree = SDKROOT; };
+		983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CommitSignatureVerifier.swift; sourceTree = "<group>"; };
 		9A1EF0B324C50DD80074FEAC /* passBeta.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBeta.entitlements; sourceTree = "<group>"; };
 		9A1EF0B424C50E780074FEAC /* passBetaAutoFillExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBetaAutoFillExtension.entitlements; sourceTree = "<group>"; };
 		9A1EF0B524C50EE00074FEAC /* passBetaExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = passBetaExtension.entitlements; sourceTree = "<group>"; };
@@ -515,6 +510,13 @@
 		DC64745E2D45B23A004B4BBC /* GitRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRepository.swift; sourceTree = "<group>"; };
 		DC6474602D46A8F2004B4BBC /* GitRepositoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRepositoryTest.swift; sourceTree = "<group>"; };
 		DC7CBBBE2D0FAC8E003BB4D2 /* YKFSmartCardInterfaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YKFSmartCardInterfaceExtension.swift; sourceTree = "<group>"; };
+		DC7CBBCF2D0FAD01003BB4D2 /* AgeInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeInterface.swift; sourceTree = "<group>"; };
+		DC7CBBD12D0FAD02003BB4D2 /* Bech32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bech32.swift; sourceTree = "<group>"; };
+		DC7CBBD32D0FAD03003BB4D2 /* CryptoAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAgent.swift; sourceTree = "<group>"; };
+		DC7CBBD52D0FAD04003BB4D2 /* CryptoInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoInterface.swift; sourceTree = "<group>"; };
+		DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureEnclaveIdentity.swift; sourceTree = "<group>"; };
+		DC7CBBD92D0FAD06003BB4D2 /* AgeIdentityImportTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeIdentityImportTableViewController.swift; sourceTree = "<group>"; };
+		DC7CBBDB2D0FAD07003BB4D2 /* PasswordStoreType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordStoreType.swift; sourceTree = "<group>"; };
 		DC8963BF1E38EEB900828B09 /* SSHKeyURLImportTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHKeyURLImportTableViewController.swift; sourceTree = "<group>"; };
 		DC917BD31E2E8231000FDF54 /* Pass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC917BD61E2E8231000FDF54 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -770,6 +772,7 @@
 				A2AA934322DE30DD00D79A00 /* PGPAgent.swift */,
 				30CCA91523258C380048CA51 /* PGPInterface.swift */,
 				DC7CBBD72D0FAD05003BB4D2 /* SecureEnclaveIdentity.swift */,
+				983D107391EFBF81107F716D /* CommitSignatureVerifier.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -1640,6 +1643,7 @@
 				30697C4521F63CAB0064FCAC /* Password.swift in Sources */,
 				30697C4421F63CAB0064FCAC /* PasswordEntity.swift in Sources */,
 				30BAC8CD22E3BB9700438475 /* KeyStore.swift in Sources */,
+				637AA095504CEEC2A25A4555 /* CommitSignatureVerifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
