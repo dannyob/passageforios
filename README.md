@@ -3,6 +3,11 @@
 [![GitHub release](https://img.shields.io/github/release/dannyob/passageforios.svg)](https://github.com/dannyob/passageforios/releases)
 [![Build Status](https://github.com/dannyob/passageforios/workflows/Deploying/badge.svg)](https://github.com/dannyob/passageforios/actions)
 
+> [!WARNING]
+> **This is a one-person, mostly vibe-coded fork** of the established upstream [Pass for iOS](https://github.com/mssun/passforios).
+>
+> It is intended for experimental use and preparation for upstreaming (which may never happen). **Use at your own risk!** Consider the implications of using an unaudited, unstable fork before relying on it, and be prepared to find bugs, raise issues, and  fix them yourself!
+
 # Passage for iOS
 
 [Passage](https://github.com/FiloSottile/passage) is a fork of the command line program Password Store. Password store uses PGP to encrypt; Passage uses the modern [age](https://age-encryption.org/) utility and is written by age's author, [Filippo Valsorda](https://filippo.io).
@@ -14,8 +19,6 @@ Similarly, [Passage for iOS](https://github.com/dannyob/passageforios) is a frie
 The vast majority of Passage for iOS's code comes from
 [Pass](https://github.com/mssun/passforios). My hope is that the changes here
 can be upstreamed to Pass for iOS at some point. 
-
-It was mostly vibe-coded by Claude, however, so some caution is advised! Pass for iOS is available on the iPhone App store. Passage for iOS you must build yourself for now.
 
 You can and should donate to support the original Pass here:
 [![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://www.paypal.me/mssun).
