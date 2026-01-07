@@ -1,6 +1,5 @@
-<img src="icon/icon_round.png" width="76"/>
-
-<!-- [![GitHub release](https://img.shields.io/github/release/dannyob/passageforios.svg)](https://github.com/dannyob/passageforios/releases) 
+<!-- <img src="icon/icon_round.png" width="76"/>
+ [![GitHub release](https://img.shields.io/github/release/dannyob/passageforios.svg)](https://github.com/dannyob/passageforios/releases) 
 [![Build Status](https://github.com/dannyob/passageforios/workflows/Deploying/badge.svg)](https://github.com/dannyob/passageforios/actions) -->
 
 > [!WARNING]
